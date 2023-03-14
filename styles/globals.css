@@ -2,8 +2,8 @@
 @tailwind components;
 @tailwind utilities;
 
-.prose :is(h2, h3, h4) {
-  @apply dark:text-primary-11;
+.prose :is(h2, h3) {
+  @apply font-serif text-primary-11;
 }
 
 .prose .anchor {
@@ -86,7 +86,7 @@ table {
 }
 
 [data-rehype-pretty-code-fragment] pre > code {
-  @apply grid min-w-full break-words rounded-none border-0 bg-transparent p-0 text-sm text-neutral-12 lg:text-base;
+  @apply grid min-w-full break-words rounded-none border-0 bg-transparent p-0 text-xs text-neutral-12 sm:text-sm lg:text-base;
   counter-reset: line;
   box-decoration-break: clone;
 }

@@ -7,16 +7,16 @@ import { TooltipProvider } from "@/ui/primitive/Tooltip";
 
 // use in production
 // https://github.com/vercel/next.js/issues/45080
-// const notoSansSC = Noto_Sans_SC({
-//   variable: "--font-noto-sans-sc",
-//   weight: ["400", "500", "700"],
-//   subsets: ["latin"],
-//   display: "swap",
-//   preload: false,
-// });
+const notoSansSC = Noto_Sans_SC({
+  variable: "--font-noto-sans-sc",
+  weight: ["400", "500", "700"],
+  subsets: ["latin"],
+  display: "swap",
+  preload: false,
+});
 
 // use in development
-const notoSansSC = { variable: "font-['Noto_Sans_SC']" };
+// const notoSansSC = { variable: "font-['Noto_Sans_SC']" };
 
 export const metadata: Metadata = {
   title: {
@@ -54,9 +54,12 @@ export default function RootLayout({
   return (
     // https://github.com/pacocoursey/next-themes/issues/152#issuecomment-1364280564
     <html lang="zh" className={notoSansSC.variable} suppressHydrationWarning>
-      <body className="container mx-auto bg-neutral-2 dark:bg-neutral-1">
+      <body className="container mx-auto bg-neutral-2 px-4 dark:bg-neutral-1 sm:px-12 lg:px-24">
         <ThemeProvider attribute="class" enableSystem={false}>
-          <TooltipProvider>{children}</TooltipProvider>
+          <TooltipProvider>
+            <header className="h-20" />
+            {children}
+          </TooltipProvider>
         </ThemeProvider>
       </body>
     </html>
