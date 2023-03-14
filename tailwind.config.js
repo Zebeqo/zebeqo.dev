@@ -18,12 +18,13 @@ module.exports = {
       fontFamily: {
         sans: ["var(--font-noto-sans-sc)"],
         serif: ["LXGW WenKai Lite"],
-        mono: ["LXGW WenKai Lite"],
+        // mono: ["LXGW WenKai Lite"],
       },
       colors: {
         primary: toRadixVars("grass"),
         accent: toRadixVars("plum"),
         neutral: toRadixVars("olive"),
+        neutralA: toRadixVars("oliveA"),
         ...radixColors.blackA,
       },
     },
@@ -38,6 +39,8 @@ module.exports = {
         plumDark: radixColors.plumDark,
         olive: radixColors.olive,
         oliveDark: radixColors.oliveDark,
+        oliveA: radixColors.oliveA,
+        oliveDarkA: radixColors.oliveDarkA,
       },
     }),
     require("tailwindcss-animate"),

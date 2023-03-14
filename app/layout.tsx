@@ -54,7 +54,7 @@ export default function RootLayout({
   return (
     // https://github.com/pacocoursey/next-themes/issues/152#issuecomment-1364280564
     <html lang="zh" className={notoSansSC.variable} suppressHydrationWarning>
-      <body className="bg-neutral-2">
+      <body className="container mx-auto bg-neutral-2 dark:bg-neutral-1">
         <ThemeProvider attribute="class" enableSystem={false}>
           <TooltipProvider>{children}</TooltipProvider>
         </ThemeProvider>

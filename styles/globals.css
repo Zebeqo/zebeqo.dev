@@ -1,3 +1,119 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+.prose :is(h2, h3, h4) {
+  @apply dark:text-primary-11;
+}
+
+.prose .anchor {
+  @apply invisible absolute no-underline;
+
+  margin-left: -1em;
+  padding-right: 0.5em;
+  width: 80%;
+  max-width: 700px;
+  cursor: pointer;
+}
+
+.anchor:hover {
+  @apply visible;
+}
+
+.prose .anchor:after {
+  @apply text-primary-9;
+  content: "#";
+}
+
+.prose *:hover > .anchor {
+  @apply visible;
+}
+
+.prose pre {
+  @apply dark border border-neutral-6 bg-neutral-2 p-0 py-4;
+}
+
+.prose code {
+  @apply mx-0.5 rounded-md bg-neutral-4 px-2 py-1 text-neutral-11 before:content-[''] after:content-[''];
+}
+
+.prose pre code {
+  @apply text-neutral-800 dark:text-neutral-200;
+}
+
+.prose img {
+  /* Don't apply styles to next/image */
+  @apply m-0;
+}
+
+.prose > :first-child {
+  /* Override removing top margin, causing layout shift */
+  margin-top: 1.25em !important;
+  margin-bottom: 1.25em !important;
+}
+
+pre::-webkit-scrollbar {
+  display: none;
+}
+
+pre {
+  -ms-overflow-style: none; /* IE and Edge */
+  scrollbar-width: none; /* Firefox */
+}
+
+/* Remove Safari input shadow on mobile */
+input[type="text"],
+input[type="email"] {
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+}
+
+.prose .tweet a {
+  text-decoration: inherit;
+  font-weight: inherit;
+}
+
+table {
+  display: block;
+  max-width: fit-content;
+  overflow-x: auto;
+  white-space: nowrap;
+}
+
+.prose .callout > p {
+  margin: 0 !important;
+}
+
+[data-rehype-pretty-code-fragment] pre > code {
+  @apply grid min-w-full break-words rounded-none border-0 bg-transparent p-0 text-sm text-neutral-12 lg:text-base;
+  counter-reset: line;
+  box-decoration-break: clone;
+}
+[data-rehype-pretty-code-fragment] pre > code > .line {
+  @apply py-1 px-6;
+}
+[data-line-numbers] .line {
+  @apply px-4;
+}
+[data-rehype-pretty-code-fragment] [data-line-numbers] > .line::before {
+  counter-increment: line;
+  content: counter(line);
+  display: inline-block;
+  width: 1rem;
+  margin-right: 1rem;
+  text-align: right;
+  color: gray;
+}
+[data-rehype-pretty-code-fragment] .line.highlighted {
+  @apply border-l-2 border-neutral-9 bg-neutral-5;
+}
+[data-rehype-pretty-code-fragment] .word {
+  @apply rounded-md bg-neutral-5 p-1;
+}
+[data-rehype-pretty-code-title] {
+  @apply dark rounded-t-lg border border-neutral-6 bg-neutral-1 px-4 py-3 font-mono text-xs font-medium text-neutral-12 lg:text-sm;
+}
+[data-rehype-pretty-code-title] + pre {
+  @apply mt-0 rounded-t-none border-t-0;
+}
