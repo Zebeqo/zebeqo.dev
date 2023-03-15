@@ -3,15 +3,13 @@
 @tailwind utilities;
 
 .prose :is(h2, h3) {
-  @apply font-serif text-primary-11;
+  @apply scroll-m-10 font-serif text-primary-11;
 }
 
 .prose .anchor {
   @apply invisible absolute -ml-4 no-underline sm:ml-[-1em];
 
   padding-right: 0.5em;
-  width: 80%;
-  max-width: 700px;
   cursor: pointer;
 }
 

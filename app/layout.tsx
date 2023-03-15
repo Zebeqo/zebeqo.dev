@@ -53,8 +53,12 @@ export default function RootLayout({
 }) {
   return (
     // https://github.com/pacocoursey/next-themes/issues/152#issuecomment-1364280564
-    <html lang="zh" className={notoSansSC.variable} suppressHydrationWarning>
-      <body className="container mx-auto bg-neutral-2 px-4 dark:bg-neutral-1 sm:px-12 lg:px-24">
+    <html
+      lang="zh"
+      className={`${notoSansSC.variable} scroll-smooth`}
+      suppressHydrationWarning
+    >
+      <body className="container mx-auto bg-neutral-2 px-4 selection:bg-primary-9 selection:text-white dark:bg-neutral-1 sm:px-12 lg:px-24">
         <ThemeProvider attribute="class" enableSystem={false}>
           <TooltipProvider>
             <header className="h-20" />
