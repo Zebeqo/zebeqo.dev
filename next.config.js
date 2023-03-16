@@ -6,6 +6,7 @@ const nextConfig = {
   experimental: {
     appDir: true,
   },
+  transpilePackages: ["jotai-devtools"],
 };
 
 module.exports = withContentlayer(nextConfig);

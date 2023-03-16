@@ -1,5 +1,3 @@
-import { ThemeButton } from "@/components/Button/ThemeButton";
-
 export default function Home() {
   return (
     <div className="container mx-auto">
@@ -15,7 +13,6 @@ export default function Home() {
         <div>Hello,world</div>
         <div>你好，世界</div>
       </div>
-      <ThemeButton />
     </div>
   );
 }
