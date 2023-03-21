@@ -32,6 +32,7 @@ specifiers:
   clsx: 1.2.1
   contentlayer: ^0.3.0
   css-loader: 6.7.3
+  dayjs: ^1.11.7
   eslint: 8.36.0
   eslint-config-next: 13.2.4
   eslint-plugin-storybook: 0.6.11
@@ -79,6 +80,7 @@ dependencies:
   class-variance-authority: 0.4.0_typescript@4.9.5
   clsx: 1.2.1
   contentlayer: 0.3.0_esbuild@0.17.11
+  dayjs: 1.11.7
   framer-motion: 10.3.2_biqbaboplfbrettd7655fr4n2y
   jotai: 2.0.3_react@18.2.0
   jotai-devtools: 0.3.1_v6wpzopzo5oeb3x6zt72ptvj4u
@@ -9207,6 +9209,13 @@ packages:
         integrity: sha512-0R9ikRb668HB7QDxT1vkpuUBtqc53YyAwMwGeUFKRojY/NWKvdZ+9UYtRfGmhqNbRkTSVpMbmyhXipFFv2cb/A==,
       }
     engines: { node: ">= 12" }
+    dev: false
+
+  /dayjs/1.11.7:
+    resolution:
+      {
+        integrity: sha512-+Yw9U6YO5TQohxLcIkrXBeY73WP3ejHWVvx8XCk3gxvQDCTEmS48ZrSZCKciI7Bhl/uCMyxYtE9UqRILmFphkQ==,
+      }
     dev: false
 
   /debug/2.6.9:

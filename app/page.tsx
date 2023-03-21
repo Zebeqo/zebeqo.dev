@@ -1,6 +1,6 @@
 export default function Home() {
   return (
-    <div className="container mx-auto">
+    <div>
       <div>
         <div>Hello,world</div>
         <div>你好，世界</div>

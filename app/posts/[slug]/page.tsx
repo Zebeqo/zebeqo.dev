@@ -1,5 +1,5 @@
 import { allPosts } from "contentlayer/generated";
-import { Mdx } from "@/components/Mdx";
+import { Mdx } from "@/components/Mdx/Mdx";
 import { notFound } from "next/navigation";
 import { getTableOfContents } from "@/lib/toc";
 import { DashboardTableOfContents } from "@/components/Toc";
@@ -20,9 +20,9 @@ export default async function Page({ params }: { params: { slug: string } }) {
   const toc = await getTableOfContents(post.body.raw);
 
   return (
-    <main className="relative flex justify-center xl:justify-start xl:space-x-20 2xl:space-x-40">
+    <main className="relative flex justify-center xl:justify-start xl:space-x-24">
       <Mdx code={post.body.code} />
-      <div className="hidden text-sm xl:block 2xl:text-base">
+      <div className="hidden text-sm xl:block">
         <div className="sticky top-32 max-w-sm">
           <DashboardTableOfContents toc={toc} />
         </div>

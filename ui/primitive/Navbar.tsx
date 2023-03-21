@@ -51,7 +51,7 @@ const NavbarItem = memo(
     return (
       <li
         className={cn(
-          "relative z-10 px-3 py-1 text-sm font-medium text-neutral-12",
+          "relative z-10 px-3 py-1 text-sm font-bold text-neutral-12",
           isSelected && "z-0",
           className
         )}

@@ -90,11 +90,11 @@ function Tree({ tree, level = 1, activeItem }: TreeProps) {
             <a
               href={item.url}
               className={cn(
-                "inline-block no-underline",
+                "inline-block text-sm no-underline",
                 // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
                 item.url === `#${activeItem}`
                   ? "font-medium text-accent-11"
-                  : "text-sm text-neutral-11 hover:text-neutral-12"
+                  : "text-neutral-11 hover:text-neutral-12"
               )}
             >
               {item.title}

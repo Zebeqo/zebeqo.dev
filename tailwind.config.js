@@ -11,6 +11,7 @@ module.exports = {
     "./hooks/**/*.tsx",
     "./.storybook/*.html",
     "./.storybook/preview.ts",
+    "./content/**/*.mdx",
   ],
   darkMode: "class",
   theme: {
