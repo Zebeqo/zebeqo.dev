@@ -12,16 +12,16 @@ import { navbarStore } from "@/ui/primitive/Navbar";
 
 // use in production
 // https://github.com/vercel/next.js/issues/45080
-// const notoSansSC = Noto_Sans_SC({
-//   variable: "--font-noto-sans-sc",
-//   weight: ["400", "500", "700"],
-//   subsets: ["latin"],
-//   display: "swap",
-//   preload: false,
-// });
+const notoSansSC = Noto_Sans_SC({
+  variable: "--font-noto-sans-sc",
+  weight: ["400", "500", "700"],
+  subsets: ["latin"],
+  display: "swap",
+  preload: false,
+});
 
 // use in development
-const notoSansSC = { variable: "font-['Noto_Sans_SC']" };
+// const notoSansSC = { variable: "font-['Noto_Sans_SC']" };
 
 export const metadata: Metadata = {
   title: {
@@ -68,10 +68,10 @@ export default function RootLayout({
       className={`${notoSansSC.variable} scroll-smooth`}
       suppressHydrationWarning
     >
-      <body className="container mx-auto bg-neutral-2 px-4 selection:bg-primary-9 selection:text-white dark:bg-neutral-1 sm:px-12 lg:px-24">
+      <body className="container mx-auto bg-neutral-2 px-4 selection:bg-primary-9 selection:text-white dark:bg-neutral-1 sm:px-12 lg:px-24 2xl:max-w-screen-xl">
         <ThemeProvider attribute="class" enableSystem={false}>
           <JotaiProvider>
-            {JotaiDevToolsComponent}
+            {/*{JotaiDevToolsComponent}*/}
             <TooltipProvider>
               <Header />
               {children}

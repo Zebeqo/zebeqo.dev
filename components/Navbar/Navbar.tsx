@@ -4,7 +4,7 @@ import { usePathname } from "next/navigation";
 import { NavbarItem, Navbar as NavbarRoot } from "@/ui/primitive/Navbar";
 
 export function Navbar() {
-  const pathname = usePathname().substring(1) || "home";
+  const pathname = usePathname().split("/")[1] || "home";
 
   return (
     <NavbarRoot value={pathname}>

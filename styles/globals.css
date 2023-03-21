@@ -3,7 +3,7 @@
 @tailwind utilities;
 
 .prose :is(h2, h3) {
-  @apply scroll-m-10 font-serif text-primary-11;
+  @apply scroll-m-10 !font-sans text-primary-11;
 }
 
 .prose .anchor {
@@ -31,7 +31,7 @@
 }
 
 .prose code {
-  @apply mx-0.5 rounded-md bg-neutral-4 px-2 py-1 text-neutral-11 before:content-[''] after:content-[''];
+  @apply mx-0.5 rounded-md bg-neutral-4 px-2 py-1 text-accent-11 before:content-[''] after:content-[''];
 }
 
 .prose pre code {

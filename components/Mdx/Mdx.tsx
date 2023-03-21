@@ -1,14 +1,16 @@
 import { useMDXComponent } from "next-contentlayer/hooks";
-import Image from "next/image";
+import Image from "@/components/Mdx/MdxImage";
+import Link from "@/components/Mdx/MdxLink";
 
 const components = {
   Image,
+  a: Link,
 };
 
 export function Mdx({ code }: { code: string }) {
   const Component = useMDXComponent(code);
   return (
-    <article className="prose prose-olive min-w-0 md:prose-lg lg:prose-xl lg:max-w-3xl 2xl:max-w-4xl">
+    <article className="prose prose-olive min-w-0 font-serif md:prose-lg lg:max-w-3xl">
       <Component components={components} />
     </article>
   );
