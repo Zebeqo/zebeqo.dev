@@ -46,3 +46,6 @@ next-env.d.ts
 
 # contentlayer
 /.contentlayer
+
+# env
+.env
