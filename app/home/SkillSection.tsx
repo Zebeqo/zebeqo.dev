@@ -1,0 +1,71 @@
+import { withToolTipLogoIcon } from "@/components/LogoIcons/withToolTipLogoIcon";
+import {
+  backendStack,
+  designToolStack,
+  devToolStack,
+  frontendStack,
+} from "@/config/stack";
+
+const Skill = ({
+  name,
+  description,
+  children,
+}: {
+  name: string;
+  description: string;
+  children: React.ReactNode;
+}) => {
+  return (
+    <div className="flex w-[380px] flex-col space-y-4">
+      <h2 className="font-serif text-4xl font-bold text-primary-11">{name}</h2>
+      <p className="mt-4 text-neutral-11">{description}</p>
+      {children}
+    </div>
+  );
+};
+
+const SkillGroup = ({
+  label,
+  children,
+}: {
+  label: string;
+  children: React.ReactNode;
+}) => (
+  <div className="flex items-center space-x-4">
+    <p className="font-serif text-xl">{label}：</p>
+    <div className="flex space-x-4">{children}</div>
+  </div>
+);
+
+export const SkillSection = () => (
+  <section className="flex justify-between">
+    <Skill name={"技术栈"} description={"我习惯于使用这些技术开发 web 应用。"}>
+      <SkillGroup label={"前端"}>
+        {frontendStack.map((item) => {
+          const Icon = withToolTipLogoIcon(item);
+          return <Icon key={item.content} />;
+        })}
+      </SkillGroup>
+      <SkillGroup label={"后端"}>
+        {backendStack.map((item) => {
+          const Icon = withToolTipLogoIcon(item);
+          return <Icon key={item.content} />;
+        })}
+      </SkillGroup>
+    </Skill>
+    <Skill name={"工具箱"} description={"我能用这些工具进行各种各样的创作。"}>
+      <SkillGroup label={"设计"}>
+        {designToolStack.map((item) => {
+          const Icon = withToolTipLogoIcon(item);
+          return <Icon key={item.content} />;
+        })}
+      </SkillGroup>
+      <SkillGroup label={"开发"}>
+        {devToolStack.map((item) => {
+          const Icon = withToolTipLogoIcon(item);
+          return <Icon key={item.content} />;
+        })}
+      </SkillGroup>
+    </Skill>
+  </section>
+);
