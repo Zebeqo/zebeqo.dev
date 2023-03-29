@@ -28,6 +28,20 @@ module.exports = {
         neutralA: toRadixVars("oliveA"),
         ...radixColors.blackA,
       },
+      keyframes: ({}) => ({
+        loading: {
+          "0%": {
+            opacity: ".2",
+          },
+          "20%": {
+            opacity: "1",
+            transform: "translateX(1px)",
+          },
+          to: {
+            opacity: ".2",
+          },
+        },
+      }),
     },
   },
   plugins: [
