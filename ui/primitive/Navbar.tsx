@@ -15,9 +15,7 @@ const Navbar = forwardRef<
   React.ElementRef<"nav">,
   React.ComponentPropsWithoutRef<"nav"> & { value: string }
 >(({ className, children, value, ...props }, ref) => {
-  useEffect(() => {
-    navbarStore.set(activeValueAtom, value);
-  }, [value]);
+  navbarStore.set(activeValueAtom, value);
 
   return (
     <Provider store={navbarStore}>
