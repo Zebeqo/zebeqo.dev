@@ -1,6 +1,9 @@
 import "@/styles/globals.css";
 import "lxgw-wenkai-lite-webfont/style.css";
 import { Noto_Sans_SC } from "next/font/google";
+import QueryProvider, {
+  ReactQueryDevtools,
+} from "@/components/Provider/QueryProvider";
 import type { Metadata } from "next";
 import ThemeProvider from "@/components/Provider/ThemeProvider";
 import { TooltipProvider } from "@/ui/primitive/Tooltip";
@@ -68,15 +71,21 @@ export default function RootLayout({
       className={`${notoSansSC.variable} scroll-smooth`}
       suppressHydrationWarning
     >
-      <body className="container mx-auto bg-neutral-2 px-4 selection:bg-primary-9 selection:text-white dark:bg-neutral-1 sm:px-12 lg:px-24 2xl:max-w-screen-xl">
+      <body className="container mx-auto bg-neutral-2 px-4 text-neutral-12 selection:bg-primary-9 selection:text-white dark:bg-neutral-1 sm:px-12 lg:px-24 2xl:max-w-screen-xl">
         <ThemeProvider attribute="class" enableSystem={false}>
-          <JotaiProvider>
-            {/*{JotaiDevToolsComponent}*/}
-            <TooltipProvider>
-              <Header />
-              {children}
-            </TooltipProvider>
-          </JotaiProvider>
+          <QueryProvider>
+            <JotaiProvider>
+              {/*{JotaiDevToolsComponent}*/}
+              <TooltipProvider>
+                <Header className="mb-4" />
+                {children}
+              </TooltipProvider>
+            </JotaiProvider>
+            <ReactQueryDevtools
+              initialIsOpen={false}
+              position={"bottom-right"}
+            />
+          </QueryProvider>
         </ThemeProvider>
       </body>
     </html>
