@@ -11,12 +11,13 @@ const TooltipProvider = TooltipPrimitive.Provider;
 interface TooltipProps
   extends React.ComponentPropsWithoutRef<typeof TooltipPrimitive.Content> {
   content: string;
+  delayDuration?: number;
 }
 const Tooltip = forwardRef<
   React.ElementRef<typeof TooltipPrimitive.Content>,
   TooltipProps
->(({ className, children, content, ...props }, ref) => (
-  <TooltipPrimitive.Root>
+>(({ className, children, content, delayDuration, ...props }, ref) => (
+  <TooltipPrimitive.Root delayDuration={delayDuration}>
     <TooltipPrimitive.Trigger asChild>{children}</TooltipPrimitive.Trigger>
     <TooltipPrimitive.Portal className="z-50">
       <TooltipPrimitive.Content
@@ -27,7 +28,7 @@ const Tooltip = forwardRef<
           "radix-side-right:animate-slide-left-fade",
           "radix-side-bottom:animate-slide-up-fade",
           "radix-side-left:animate-slide-right-fade",
-          "inline-flex items-center rounded-md px-4 py-2.5",
+          "inline-flex items-center rounded-md px-3 py-2.5",
           "z-50 bg-neutral-9",
           className
         )}
