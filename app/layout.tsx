@@ -10,7 +10,7 @@ import { TooltipProvider } from "@/ui/primitive/Tooltip";
 import JotaiProvider, {
   JotaiDevTools,
 } from "@/components/Provider/JotaiProvider";
-import { Header } from "@/components/Header";
+import { Header } from "@/app/Header";
 import { navbarStore } from "@/ui/primitive/Navbar";
 
 // use in production
