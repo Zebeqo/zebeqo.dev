@@ -3,32 +3,38 @@ import Link from "next/link";
 import { ViewsNumber } from "@/components/ViewsNumber";
 import { LoadingDots } from "@/components/LoadingDots";
 import { Suspense } from "react";
+import { cn } from "@/lib/utils";
 
 export function PostCard({
   title,
   summary,
   date,
   slug,
+  className,
 }: {
   title: string;
   summary: string;
   date: string;
   slug: string;
+  className?: string;
 }) {
   return (
     <Link
-      className="group flex max-w-prose flex-col space-y-1"
+      className={cn(
+        "group max-w-lg rounded-2xl border border-neutral-7 bg-neutral-2 p-6 shadow transition-shadow duration-300 ease-in-out hover:shadow-lg",
+        className
+      )}
       href={`/posts/${slug}`}
     >
-      <div className="font-serif text-xl font-bold text-neutral-12 group-hover:text-accent-11">
+      <div className="text-xl font-medium text-neutral-12 group-hover:text-accent-11">
         {title}
       </div>
-      <div className="flex space-x-4 text-neutral-11">
-        <div className="flex items-center space-x-1 text-xs">
+      <div className="mt-1 flex space-x-4 text-neutral-11">
+        <div className="flex items-center space-x-1">
           <CalendarDaysIcon className="h-4 w-4" />
           <div>{date}</div>
         </div>
-        <div className="flex items-center space-x-1 text-xs">
+        <div className="flex items-center space-x-1">
           <EyeIcon className="h-4 w-4" />
           <div>
             <Suspense fallback={<LoadingDots />}>
@@ -38,7 +44,7 @@ export function PostCard({
           </div>
         </div>
       </div>
-      <div className="text-base text-neutral-11">{summary}</div>
+      <div className="mt-3 text-lg text-neutral-11">{summary}</div>
     </Link>
   );
 }

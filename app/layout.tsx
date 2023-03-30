@@ -12,6 +12,7 @@ import JotaiProvider, {
 } from "@/components/Provider/JotaiProvider";
 import { Header } from "@/app/Header";
 import { navbarStore } from "@/ui/primitive/Navbar";
+import { Footer } from "@/app/Footer";
 
 // use in production
 // https://github.com/vercel/next.js/issues/45080
@@ -71,14 +72,15 @@ export default function RootLayout({
       className={`${notoSansSC.variable} scroll-smooth`}
       suppressHydrationWarning
     >
-      <body className="container mx-auto bg-neutral-2 px-4 text-neutral-12 selection:bg-primary-9 selection:text-white dark:bg-neutral-1 sm:px-12 lg:px-24 2xl:max-w-screen-xl">
+      <body className="container mx-auto flex min-h-screen flex-col bg-neutral-2 px-4 text-neutral-12 selection:bg-primary-9 selection:text-white dark:bg-neutral-1 sm:px-12 lg:px-24 2xl:max-w-screen-xl">
         <ThemeProvider attribute="class" enableSystem={false}>
           <QueryProvider>
             <JotaiProvider>
               {/*{JotaiDevToolsComponent}*/}
               <TooltipProvider>
                 <Header className="mb-4" />
-                {children}
+                <main className="flex-grow">{children}</main>
+                <Footer className="mt-8" />
               </TooltipProvider>
             </JotaiProvider>
             <ReactQueryDevtools

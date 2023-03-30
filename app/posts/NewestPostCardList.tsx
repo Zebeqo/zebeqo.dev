@@ -1,10 +1,7 @@
 import { allPosts } from "contentlayer/generated";
 import { PostCard } from "@/components/PostCard";
 import dayjs from "dayjs";
-import localizedFormat from "dayjs/plugin/localizedFormat";
-import "dayjs/locale/zh-cn"; // 导入本地化语言
-dayjs.locale("zh-cn"); // 使用本地化语言
-dayjs.extend(localizedFormat);
+import { formatDay } from "@/lib/utils";
 
 export function NewestPostCardList() {
   const sortedPosts = allPosts.sort((a, b) => {
@@ -12,17 +9,17 @@ export function NewestPostCardList() {
   });
 
   return (
-    <div className="flex flex-col space-y-3">
-      <div className="font-serif text-2xl font-bold text-primary-11">
+    <div>
+      <div className="font-serif text-4xl font-bold text-primary-11">
         最新发布
       </div>
-      <div className="flex flex-col space-y-8">
+      <div className="mt-6 flex flex-col space-y-8">
         {sortedPosts.map((post) => (
           <PostCard
             key={post.slug}
             title={post.title}
             summary={post.summary}
-            date={dayjs(post.date).format("ll")}
+            date={formatDay(post.date)}
             slug={post.slug}
           />
         ))}

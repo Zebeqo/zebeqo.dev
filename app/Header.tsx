@@ -15,13 +15,7 @@ export const Header = forwardRef<
     {...props}
   >
     <Link href={"/"}>
-      <Image
-        src={"/avatar.png"}
-        alt={"avatar"}
-        width={32}
-        height={32}
-        className="hidden sm:block"
-      />
+      <Image src={"/avatar.png"} alt={"avatar"} width={32} height={32} />
     </Link>
     <Navbar />
     <ThemeButton />
