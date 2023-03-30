@@ -6,8 +6,10 @@ export default function Page() {
   return (
     <div className="flex flex-col space-y-12">
       <IntroSection />
-      <FeatureSection />
-      <SkillSection />
+      <div className="flex flex-col space-y-12 xl:flex-row xl:justify-between xl:space-y-0">
+        <FeatureSection />
+        <SkillSection />
+      </div>
     </div>
   );
 }

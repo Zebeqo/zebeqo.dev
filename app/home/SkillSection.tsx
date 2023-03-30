@@ -37,35 +37,43 @@ const SkillGroup = ({
   </div>
 );
 
+const TechSkill = () => (
+  <Skill name={"技术栈"} description={"我习惯于使用这些技术开发 web 应用。"}>
+    <SkillGroup label={"前端"}>
+      {frontendStack.map((item) => {
+        const Icon = withToolTipLogoIcon(item);
+        return <Icon key={item.content} />;
+      })}
+    </SkillGroup>
+    <SkillGroup label={"后端"}>
+      {backendStack.map((item) => {
+        const Icon = withToolTipLogoIcon(item);
+        return <Icon key={item.content} />;
+      })}
+    </SkillGroup>
+  </Skill>
+);
+
+const ToolSkill = () => (
+  <Skill name={"工具集"} description={"我能用这些工具进行各种各样的创作。"}>
+    <SkillGroup label={"设计"}>
+      {designToolStack.map((item) => {
+        const Icon = withToolTipLogoIcon(item);
+        return <Icon key={item.content} />;
+      })}
+    </SkillGroup>
+    <SkillGroup label={"开发"}>
+      {devToolStack.map((item) => {
+        const Icon = withToolTipLogoIcon(item);
+        return <Icon key={item.content} />;
+      })}
+    </SkillGroup>
+  </Skill>
+);
+
 export const SkillSection = () => (
-  <section className="flex justify-between">
-    <Skill name={"技术栈"} description={"我习惯于使用这些技术开发 web 应用。"}>
-      <SkillGroup label={"前端"}>
-        {frontendStack.map((item) => {
-          const Icon = withToolTipLogoIcon(item);
-          return <Icon key={item.content} />;
-        })}
-      </SkillGroup>
-      <SkillGroup label={"后端"}>
-        {backendStack.map((item) => {
-          const Icon = withToolTipLogoIcon(item);
-          return <Icon key={item.content} />;
-        })}
-      </SkillGroup>
-    </Skill>
-    <Skill name={"工具箱"} description={"我能用这些工具进行各种各样的创作。"}>
-      <SkillGroup label={"设计"}>
-        {designToolStack.map((item) => {
-          const Icon = withToolTipLogoIcon(item);
-          return <Icon key={item.content} />;
-        })}
-      </SkillGroup>
-      <SkillGroup label={"开发"}>
-        {devToolStack.map((item) => {
-          const Icon = withToolTipLogoIcon(item);
-          return <Icon key={item.content} />;
-        })}
-      </SkillGroup>
-    </Skill>
+  <section className="flex flex-col space-y-16">
+    <TechSkill />
+    <ToolSkill />
   </section>
 );

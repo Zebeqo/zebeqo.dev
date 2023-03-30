@@ -1,27 +1,37 @@
-import { NewestPostCardList } from "@/app/posts/NewestPostCardList";
-import Image from "next/image";
+import { allPosts } from "contentlayer/generated";
+import { featuredPost } from "@/config/featuredPost";
+import { PostCard } from "@/components/PostCard";
+import { formatDay } from "@/lib/utils";
 
-export function FeatureSection() {
+export const FeatureSection = () => {
+  const featuredPosts = featuredPost.map((slug) => {
+    const post = allPosts.find((post) => post.slug === slug);
+
+    if (!post) {
+      throw new Error(`Post with slug ${slug} not found.`);
+    }
+
+    return post;
+  });
+
   return (
-    <section className="flex justify-between">
-      <div>
-        <h2 className="font-serif text-4xl font-bold text-primary-11">
-          精选文章
-        </h2>
-        <div className="mt-6">
-          <NewestPostCardList />
+    <section>
+      <h2 className="font-serif text-4xl font-bold text-primary-11">
+        精选文章
+      </h2>
+      <div className="mt-6">
+        <div className="flex flex-col space-y-8">
+          {featuredPosts.map((post) => (
+            <PostCard
+              key={post.slug}
+              title={post.title}
+              summary={post.summary}
+              date={formatDay(post.date)}
+              slug={post.slug}
+            />
+          ))}
         </div>
-      </div>
-      <div>
-        <Image
-          src={
-            "https://em-content.zobj.net/source/microsoft-teams/337/writing-hand_270d-fe0f.png"
-          }
-          alt={"writing-hand"}
-          width={256}
-          height={256}
-        />
       </div>
     </section>
   );
-}
+};

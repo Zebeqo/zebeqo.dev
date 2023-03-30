@@ -1,5 +1,5 @@
-import { TwitterIcon } from "@/ui/icon/24/TwitterIcon";
-import { GithubIcon } from "@/ui/icon/24/GithubIcon";
+import { withToolTipLogoIcon } from "@/components/LogoIcons/withToolTipLogoIcon";
+import { sns } from "@/config/sns";
 
 export const IntroSection = () => (
   <section className="pt-4">
@@ -13,12 +13,15 @@ export const IntroSection = () => (
       <p>我目前对工作开放，如果想要合作或交流，请随时联系我。</p>
     </div>
     <div className="mt-4 flex space-x-4">
-      <a href="https://twitter.com/zebeqo" target="_blank">
-        <TwitterIcon className="h-6 w-6 text-neutral-9 hover:text-neutral-11" />
-      </a>
-      <a href="https://github.com/Zebeqo" target="_blank">
-        <GithubIcon className="h-6 w-6 text-neutral-9 hover:text-neutral-11" />
-      </a>
+      {sns.map((item) => {
+        const Icon = withToolTipLogoIcon(item);
+        return (
+          <Icon
+            key={item.content}
+            className="h-6 w-6 text-neutral-9 hover:text-neutral-11"
+          />
+        );
+      })}
     </div>
   </section>
 );
