@@ -1,9 +1,8 @@
-import Image from "next/image";
 import { Navbar } from "@/components/Navbar/Navbar";
 import { ThemeButton } from "@/components/Button/ThemeButton";
-import Link from "next/link";
 import { forwardRef } from "react";
 import { cn } from "@/lib/utils";
+import { Avatar } from "@/app/Avatar";
 
 export const Header = forwardRef<
   React.ElementRef<"header">,
@@ -14,9 +13,7 @@ export const Header = forwardRef<
     className={cn("flex items-center justify-between py-6", className)}
     {...props}
   >
-    <Link href={"/"}>
-      <Image src={"/avatar.png"} alt={"avatar"} width={32} height={32} />
-    </Link>
+    <Avatar />
     <Navbar />
     <ThemeButton />
   </header>

@@ -2,7 +2,7 @@ import { withToolTipLogoIcon } from "@/components/LogoIcons/withToolTipLogoIcon"
 import { sns } from "@/config/sns";
 
 export const IntroSection = () => (
-  <section className="pt-4">
+  <section className="pt-[72px]">
     <h1 className="mb-6 font-serif text-5xl font-bold">你好, 我是 Zebeqo 👋</h1>
     <div className="leading-7">
       <p>
