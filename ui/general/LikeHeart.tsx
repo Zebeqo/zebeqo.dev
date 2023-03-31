@@ -1,13 +1,15 @@
+"use client";
+
 import { useState } from "react";
 import { cn } from "@/lib/utils";
 import { motion } from "framer-motion";
 
-export const LikeButton = ({
+export const LikeHeart = ({
   step,
   onClick,
 }: {
   step: number;
-  onClick: () => void;
+  onClick?: () => void;
 }) => {
   const [active, setActive] = useState(false);
 

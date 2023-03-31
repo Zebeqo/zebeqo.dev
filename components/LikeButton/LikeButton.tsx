@@ -4,7 +4,8 @@ import { memo, useState } from "react";
 import { likeScheme, useMutatePostLike, usePostLikes } from "@/hooks/use-like";
 import { useDebouncedCallback } from "use-debounce";
 import { useQueryClient } from "@tanstack/react-query";
-import { LikeButton } from "@/ui/general/LikeButton";
+import { LikeHeart } from "@/ui/general/LikeHeart";
+import { cn } from "@/lib/utils";
 
 const LikeButtonContainer = memo(({ slug }: { slug: string }) => {
   const { data } = usePostLikes(slug);
@@ -43,7 +44,16 @@ const LikeButtonContainer = memo(({ slug }: { slug: string }) => {
   return (
     <>
       {data && (
-        <LikeButton onClick={handleClick} step={data.currentUserLikes} />
+        <div className="relative">
+          <LikeHeart step={data.currentUserLikes} />
+          <button
+            onClick={handleClick}
+            className={cn(
+              "absolute inset-0 m-auto h-10 w-10",
+              data.currentUserLikes >= 3 && "cursor-not-allowed"
+            )}
+          />
+        </div>
       )}
     </>
   );

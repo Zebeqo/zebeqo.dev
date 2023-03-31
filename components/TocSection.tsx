@@ -1,6 +1,6 @@
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-nocheck
-// This file is copied from https://github.com/shadcn/ui/blob/main/apps/www/components/toc.tsx
+// This file is based on https://github.com/shadcn/ui/blob/main/apps/www/components/toc.tsx
 "use client";
 
 import * as React from "react";
@@ -8,12 +8,20 @@ import { useMounted } from "@/hooks/use-mounted";
 
 import type { TableOfContents } from "@/lib/toc";
 import { cn } from "@/lib/utils";
+import * as Separator from "@radix-ui/react-separator";
+import { LikeHeart as LikeButtonUI } from "@/ui/general/LikeHeart";
+import { LikeButton } from "@/components/LikeButton/LikeButton";
+import { Suspense } from "react";
 
 interface TocProps {
   toc: TableOfContents;
 }
 
-export function DashboardTableOfContents({ toc }: TocProps) {
+export function TocSection({
+  toc,
+  slug,
+  likeCount,
+}: TocProps & { slug: string; likeCount: number }) {
   const itemIds = React.useMemo(
     () =>
       toc.items
@@ -33,10 +41,22 @@ export function DashboardTableOfContents({ toc }: TocProps) {
   }
 
   return (
-    <div className="space-y-2">
-      <p className="font-medium tracking-widest">本页大纲</p>
-      <Tree tree={toc} activeItem={activeHeading} />
-    </div>
+    <>
+      <div className="space-y-2">
+        <p className="font-medium tracking-widest">本页大纲</p>
+        <Tree tree={toc} activeItem={activeHeading} />
+      </div>
+      <Separator.Root className="relative my-4 h-px bg-neutral-6" decorative>
+        <div className="absolute -left-6 -top-[19px] scale-75">
+          <Suspense fallback={<LikeButtonUI step={0} />}>
+            <LikeButton slug={slug} />
+          </Suspense>
+        </div>
+      </Separator.Root>
+      <span className="ml-12 cursor-default text-lg font-medium">
+        {likeCount}
+      </span>
+    </>
   );
 }
 
