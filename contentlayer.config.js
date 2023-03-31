@@ -31,6 +31,10 @@ export const Post = defineDocumentType(() => ({
       description: "The tags of the post",
       required: true,
     },
+    last_modified_at: {
+      type: "date",
+      description: "The last modified date of the post",
+    },
   },
   computedFields: {
     slug: {

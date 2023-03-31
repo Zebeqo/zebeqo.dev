@@ -6,6 +6,7 @@ import { useDebouncedCallback } from "use-debounce";
 import { useQueryClient } from "@tanstack/react-query";
 import { LikeHeart } from "@/ui/general/LikeHeart";
 import { cn } from "@/lib/utils";
+import { Tooltip } from "@/ui/primitive/Tooltip";
 
 const LikeButtonContainer = memo(({ slug }: { slug: string }) => {
   const { data } = usePostLikes(slug);
@@ -46,13 +47,19 @@ const LikeButtonContainer = memo(({ slug }: { slug: string }) => {
       {data && (
         <div className="relative">
           <LikeHeart step={data.currentUserLikes} />
-          <button
-            onClick={handleClick}
-            className={cn(
-              "absolute inset-0 m-auto h-10 w-10",
-              data.currentUserLikes >= 3 && "cursor-not-allowed"
-            )}
-          />
+          {data.currentUserLikes < 3 ? (
+            <button
+              onClick={handleClick}
+              className={cn("absolute inset-0 m-auto h-10 w-10")}
+            />
+          ) : (
+            <Tooltip content="最多点赞 3 次" delayDuration={100}>
+              <button
+                onClick={handleClick}
+                className={cn("absolute inset-0 m-auto h-10 w-10")}
+              />
+            </Tooltip>
+          )}
         </div>
       )}
     </>
