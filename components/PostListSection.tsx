@@ -1,29 +1,33 @@
-import { allPosts } from "contentlayer/generated";
+import type { Post } from "contentlayer/generated";
 import { PostCard } from "@/components/PostCard";
-import dayjs from "dayjs";
 import { formatDay } from "@/lib/utils";
 
-export function NewestPostCardList() {
-  const sortedPosts = allPosts.sort((a, b) => {
-    return dayjs(b.date).unix() - dayjs(a.date).unix();
-  });
-
+export function PostListSection({
+  label,
+  postList,
+  className,
+}: {
+  label: string;
+  postList: Post[];
+  className?: string;
+}) {
   return (
-    <div>
-      <div className="font-serif text-4xl font-bold text-primary-11">
-        最新发布
+    <section className="flex-grow">
+      <div className="font-serif text-3xl font-bold text-primary-11">
+        {label}
       </div>
       <div className="mt-6 flex flex-col space-y-8">
-        {sortedPosts.map((post) => (
+        {postList.map((post) => (
           <PostCard
             key={post.slug}
             title={post.title}
             summary={post.summary}
             date={formatDay(post.date)}
             slug={post.slug}
+            className={className}
           />
         ))}
       </div>
-    </div>
+    </section>
   );
 }

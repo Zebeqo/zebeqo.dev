@@ -72,7 +72,7 @@ const ToolSkill = () => (
 );
 
 export const SkillSection = () => (
-  <section className="flex flex-col space-y-16">
+  <section className="flex flex-col space-y-12">
     <TechSkill />
     <ToolSkill />
   </section>
