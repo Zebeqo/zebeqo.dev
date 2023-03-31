@@ -42,7 +42,7 @@ export function TocSection({
 
   return (
     <>
-      <div className="space-y-2">
+      <div className="space-y-1">
         <p className="font-medium tracking-widest">本页大纲</p>
         <Tree tree={toc} activeItem={activeHeading} />
       </div>
