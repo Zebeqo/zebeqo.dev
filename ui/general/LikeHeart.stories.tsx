@@ -1,16 +1,16 @@
 import type { Meta, StoryObj } from "@storybook/react";
-import { LikeButton } from "@/ui/general/LikeButton";
+import { LikeHeart } from "@/ui/general/LikeHeart";
 import { action } from "@storybook/addon-actions";
 
 const meta = {
-  title: "LikeButton",
-  component: LikeButton,
-} satisfies Meta<typeof LikeButton>;
+  title: "LikeHeart",
+  component: LikeHeart,
+} satisfies Meta<typeof LikeHeart>;
 
 export default meta;
-type Story = StoryObj<typeof LikeButton>;
+type Story = StoryObj<typeof LikeHeart>;
 
-export const LikeButton_: Story = {
+export const LikeHeart_: Story = {
   args: {
     step: 0,
     onClick: action("button clicked"),
