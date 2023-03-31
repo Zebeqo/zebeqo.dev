@@ -1,17 +1,17 @@
-import { HeadSection } from "@/components/HeadSection";
-import { NewestPostCardList } from "@/app/posts/NewestPostCardList";
+import { allPosts } from "contentlayer/generated";
+import dayjs from "dayjs";
+import { PostListSection } from "@/components/PostListSection";
 
 export default function Page() {
+  const sortedPosts = allPosts.sort((a, b) => {
+    return dayjs(b.date).unix() - dayjs(a.date).unix();
+  });
+
   return (
-    <>
-      <HeadSection
-        title="博客"
-        description="一些我写的关于编程的文章 ✍️️"
-        className="mt-4"
-      />
-      <div className="mt-10 flex justify-between">
-        <NewestPostCardList />
-      </div>
-    </>
+    <PostListSection
+      className="lg:max-w-md xl:max-w-lg"
+      label={"最新发布"}
+      postList={sortedPosts}
+    />
   );
 }
