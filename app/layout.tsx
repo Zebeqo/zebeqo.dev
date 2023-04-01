@@ -16,16 +16,16 @@ import { Footer } from "@/app/Footer";
 
 // use in production
 // https://github.com/vercel/next.js/issues/45080
-const notoSansSC = Noto_Sans_SC({
-  variable: "--font-noto-sans-sc",
-  weight: ["400", "500", "700"],
-  subsets: ["latin"],
-  display: "swap",
-  preload: false,
-});
+// const notoSansSC = Noto_Sans_SC({
+//   variable: "--font-noto-sans-sc",
+//   weight: ["400", "500", "700"],
+//   subsets: ["latin"],
+//   display: "swap",
+//   preload: false,
+// });
 
 // use in development
-// const notoSansSC = { variable: "font-['Noto_Sans_SC']" };
+const notoSansSC = { variable: "font-['Noto_Sans_SC']" };
 
 export const metadata: Metadata = {
   title: {

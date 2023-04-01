@@ -3,7 +3,7 @@ import { featuredPost } from "@/config/featuredPost";
 import { PostCard } from "@/components/PostCard";
 import { formatDay } from "@/lib/utils";
 
-export const FeatureSection = () => {
+export const FeatureSection = ({ className }: { className?: string }) => {
   const featuredPosts = featuredPost.map((slug) => {
     const post = allPosts.find((post) => post.slug === slug);
 
@@ -15,7 +15,7 @@ export const FeatureSection = () => {
   });
 
   return (
-    <section>
+    <section className={className}>
       <h2 className="font-serif text-4xl font-bold text-primary-11">
         精选文章
       </h2>

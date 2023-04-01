@@ -9,7 +9,7 @@ export default function Page() {
 
   return (
     <PostListSection
-      className="lg:max-w-md xl:max-w-lg"
+      className="animate-fadein-2"
       label={"最新发布"}
       postList={sortedPosts}
     />

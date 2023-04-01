@@ -5,6 +5,7 @@ import {
   devToolStack,
   frontendStack,
 } from "@/config/stack";
+import { cn } from "@/lib/utils";
 
 const Skill = ({
   name,
@@ -71,8 +72,8 @@ const ToolSkill = () => (
   </Skill>
 );
 
-export const SkillSection = () => (
-  <section className="flex flex-col space-y-12">
+export const SkillSection = ({ className }: { className?: string }) => (
+  <section className={cn("flex flex-col space-y-12", className)}>
     <TechSkill />
     <ToolSkill />
   </section>

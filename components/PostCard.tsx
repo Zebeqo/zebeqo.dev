@@ -21,7 +21,7 @@ export function PostCard({
   return (
     <Link
       className={cn(
-        "group w-full max-w-lg rounded-2xl border border-neutral-7 bg-neutral-2 p-6 shadow transition-shadow duration-300 ease-in-out hover:shadow-lg",
+        "group w-full max-w-none rounded-2xl border border-neutral-7 bg-neutral-2 p-6 shadow transition-shadow duration-300 ease-in-out hover:shadow-lg sm:max-w-lg",
         className
       )}
       href={`/posts/${slug}`}

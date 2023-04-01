@@ -1,8 +1,9 @@
 import { withToolTipLogoIcon } from "@/components/LogoIcons/withToolTipLogoIcon";
 import { sns } from "@/config/sns";
+import { cn } from "@/lib/utils";
 
-export const IntroSection = () => (
-  <section className="pt-[72px]">
+export const IntroSection = ({ className }: { className?: string }) => (
+  <section className={cn("pt-[72px]", className)}>
     <h1 className="mb-6 font-serif text-5xl font-bold">你好, 我是 Zebeqo 👋</h1>
     <div className="leading-7">
       <p>
