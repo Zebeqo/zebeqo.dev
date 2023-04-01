@@ -10,18 +10,15 @@ import type { TableOfContents } from "@/lib/toc";
 import { cn } from "@/lib/utils";
 import * as Separator from "@radix-ui/react-separator";
 import { LikeHeart as LikeButtonUI } from "@/ui/general/LikeHeart";
-import { LikeButton } from "@/components/LikeButton/LikeButton";
+import { LikeButton } from "@/components/LikeHeart/LikeButton";
 import { Suspense } from "react";
+import { LikesNumber } from "@/components/LikesNumber";
 
 interface TocProps {
   toc: TableOfContents;
 }
 
-export function TocSection({
-  toc,
-  slug,
-  likeCount,
-}: TocProps & { slug: string; likeCount: number }) {
+export function TocSection({ toc, slug }: TocProps & { slug: string }) {
   const itemIds = React.useMemo(
     () =>
       toc.items
@@ -53,8 +50,8 @@ export function TocSection({
           </Suspense>
         </div>
       </Separator.Root>
-      <span className="ml-12 cursor-default text-lg font-medium">
-        {likeCount}
+      <span className="ml-12 cursor-default text-lg font-bold text-neutral-11">
+        <LikesNumber slug={slug} />
       </span>
     </>
   );
