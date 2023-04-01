@@ -25,20 +25,6 @@ export default async function Page({ params }: { params: { slug: string } }) {
   }
 
   const toc = await getTableOfContents(post.body.raw);
-  const db_data = z
-    .object({
-      likes: z.number(),
-    })
-    .parse(
-      await db.post.findUnique({
-        where: {
-          slug: params.slug,
-        },
-        select: {
-          likes: true,
-        },
-      })
-    );
 
   return (
     <>
@@ -67,11 +53,7 @@ export default async function Page({ params }: { params: { slug: string } }) {
         <Mdx code={post.body.code} />
         <div className="hidden xl:block">
           <div className="sticky top-32 max-w-sm">
-            <TocSection
-              toc={toc}
-              slug={params.slug}
-              likeCount={db_data.likes}
-            />
+            <TocSection toc={toc} slug={params.slug} />
           </div>
         </div>
       </div>
