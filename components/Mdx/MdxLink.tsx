@@ -16,7 +16,7 @@ const MdxLink = (props: React.ComponentPropsWithoutRef<"a">) => {
     return <a {...props} />;
   }
 
-  return <a target="_blank" rel="noopener noreferrer" {...props} />;
+  return <a target="_blank" {...props} />;
 };
 
 export default MdxLink;

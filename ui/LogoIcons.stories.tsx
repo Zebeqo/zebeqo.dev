@@ -23,8 +23,7 @@ const meta = {
 export default meta;
 
 export const LogoIcons_: StoryObj = {
-  args: {},
-  render: ({}) => {
+  render: () => {
     return (
       <div className="grid grid-cols-5 gap-4">
         <ReactIcon />
