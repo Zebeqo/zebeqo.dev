@@ -1,6 +1,6 @@
 import type { Post } from "contentlayer/generated";
 import { PostCard } from "@/components/PostCard";
-import { formatDay } from "@/lib/utils";
+import { cn, formatDay } from "@/lib/utils";
 
 export function PostListSection({
   label,
@@ -12,7 +12,7 @@ export function PostListSection({
   className?: string;
 }) {
   return (
-    <section className="flex-grow">
+    <section className={cn("flex-grow", className)}>
       <div className="font-serif text-3xl font-bold text-primary-11">
         {label}
       </div>
@@ -24,7 +24,7 @@ export function PostListSection({
             summary={post.summary}
             date={formatDay(post.date)}
             slug={post.slug}
-            className={className}
+            className="lg:max-w-md xl:max-w-lg"
           />
         ))}
       </div>

@@ -2,6 +2,21 @@
 @tailwind components;
 @tailwind utilities;
 
+.animate-fadein-1 {
+  @apply animate-fadein;
+  animation-delay: calc(1 * 130ms);
+}
+
+.animate-fadein-2 {
+  @apply animate-fadein;
+  animation-delay: calc(2 * 130ms);
+}
+
+.animate-fadein-3 {
+  @apply animate-fadein;
+  animation-delay: calc(3 * 130ms);
+}
+
 .heart {
   width: 100px;
   height: 100px;
