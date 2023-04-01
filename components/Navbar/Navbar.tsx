@@ -2,16 +2,18 @@
 
 import { usePathname } from "next/navigation";
 import { NavbarItem, Navbar as NavbarRoot } from "@/ui/primitive/Navbar";
+import { nav } from "@/config/nav";
 
 export function Navbar() {
-  const pathname = usePathname().split("/")[1] || "home";
+  const pathname = usePathname().split("/")[1];
 
   return (
     <NavbarRoot value={pathname}>
-      <NavbarItem value="home">主页</NavbarItem>
-      <NavbarItem value="posts">文章</NavbarItem>
-      <NavbarItem value="projects">项目</NavbarItem>
-      <NavbarItem value="collections">收藏</NavbarItem>
+      {nav.map((item, index) => (
+        <NavbarItem value={item.value} key={`${item.name}-${index}`}>
+          {item.name}
+        </NavbarItem>
+      ))}
     </NavbarRoot>
   );
 }
