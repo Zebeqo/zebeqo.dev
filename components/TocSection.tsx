@@ -13,6 +13,7 @@ import { LikeHeart as LikeButtonUI } from "@/ui/general/LikeHeart";
 import { LikeButton } from "@/components/LikeHeart/LikeButton";
 import { Suspense } from "react";
 import { LikesNumber } from "@/components/LikesNumber";
+import { LoadingDots } from "@/components/LoadingDots";
 
 interface TocProps {
   toc: TableOfContents;
@@ -51,7 +52,9 @@ export function TocSection({ toc, slug }: TocProps & { slug: string }) {
         </div>
       </Separator.Root>
       <span className="ml-12 cursor-default text-lg font-bold text-neutral-11">
-        <LikesNumber slug={slug} />
+        <Suspense fallback={<LoadingDots />}>
+          <LikesNumber slug={slug} />
+        </Suspense>
       </span>
     </>
   );
