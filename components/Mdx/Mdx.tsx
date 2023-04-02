@@ -1,10 +1,12 @@
 import { useMDXComponent } from "next-contentlayer/hooks";
 import Image from "@/components/Mdx/MdxImage";
 import Link from "@/components/Mdx/MdxLink";
+import TweetClient from "@/components/Mdx/TweetClient";
 
 const components = {
   Image,
   a: Link,
+  Tweet: TweetClient,
 };
 
 export function Mdx({ code }: { code: string }) {
