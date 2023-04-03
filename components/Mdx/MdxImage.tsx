@@ -6,7 +6,9 @@ const MdxImage = forwardRef<
   React.ElementRef<typeof Image>,
   React.ComponentPropsWithoutRef<typeof Image>
 >(({ className, ...props }, ref) => (
-  <Image ref={ref} className={cn("rounded-md", className)} {...props} />
+  <div className="flex items-center justify-center">
+    <Image ref={ref} className={cn("rounded-md", className)} {...props} />
+  </div>
 ));
 MdxImage.displayName = "MdxImage";
 
