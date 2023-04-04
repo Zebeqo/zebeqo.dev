@@ -12,7 +12,7 @@ export function CategorySection({ className }: { className?: string }) {
           .map((tag) => {
             return (
               <Link key={tag[0]} href={`/posts/tags/${tag[0]}`}>
-                <Badge variant={{ color: "accent" }}>{tag[0]}</Badge>
+                <Badge color="accent">{tag[0]}</Badge>
               </Link>
             );
           })}

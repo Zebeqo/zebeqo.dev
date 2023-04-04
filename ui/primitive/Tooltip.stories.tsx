@@ -31,7 +31,7 @@ export const Tooltip_: StoryObj<{
         align={align}
         sideOffset={sideOffset}
       >
-        <Button variant={{ type: "ghost", iconOnly: true }}>
+        <Button variant="ghost" iconOnly>
           <BoltIcon className="h-6 w-6" />
         </Button>
       </Tooltip>
