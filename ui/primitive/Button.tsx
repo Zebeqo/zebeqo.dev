@@ -1,12 +1,12 @@
-import type { VariantProps } from "class-variance-authority";
-import { cva } from "class-variance-authority";
-import { cn } from "@/lib/utils";
-import { forwardRef } from "react";
+import { classed } from "classed.config";
+import type { ComponentProps } from "@tw-classed/react";
+import { deriveClassed } from "@tw-classed/react";
 
-const baseButtonClass =
+const base =
   "inline-flex items-center whitespace-nowrap rounded-md px-4 py-2 font-medium outline-none w-fit focus:outline-none focus:ring-2 select-none cursor-pointer";
 
-const primaryButton = cva(baseButtonClass, {
+const PrimaryButton = classed("button", {
+  base,
   variants: {
     color: {
       primary: "bg-primary-9 text-white hover:bg-primary-10 ring-primary-7",
@@ -16,13 +16,17 @@ const primaryButton = cva(baseButtonClass, {
       error: "bg-error-9 text-white hover:bg-error-10 ring-error-7",
       info: "bg-info-9 text-white hover:bg-info-10 ring-info-7",
     },
+    iconOnly: {
+      true: "px-2",
+    },
   },
   defaultVariants: {
     color: "neutral",
   },
 });
 
-const secondaryButton = cva(baseButtonClass, {
+const SecondaryButton = classed("button", {
+  base,
   variants: {
     color: {
       primary:
@@ -37,13 +41,17 @@ const secondaryButton = cva(baseButtonClass, {
         "bg-error-4 text-error-11 hover:bg-error-5 active:bg-error-6 ring-error-7",
       info: "bg-info-4 text-info-11 hover:bg-info-5 active:bg-info-6 ring-info-7",
     },
+    iconOnly: {
+      true: "px-2",
+    },
   },
   defaultVariants: {
     color: "neutral",
   },
 });
 
-const outlineButton = cva(cn(baseButtonClass, "focus:ring-1"), {
+const OutlineButton = classed("button", {
+  base,
   variants: {
     color: {
       primary:
@@ -58,13 +66,17 @@ const outlineButton = cva(cn(baseButtonClass, "focus:ring-1"), {
         "border border-error-7 bg-error-1 text-error-11 hover:bg-error-3 ring-error-7",
       info: "border border-info-7 bg-info-1 text-info-11 hover:bg-info-3 ring-info-7",
     },
+    iconOnly: {
+      true: "px-2",
+    },
   },
   defaultVariants: {
     color: "neutral",
   },
 });
 
-const ghostButton = cva(baseButtonClass, {
+const GhostButton = classed("button", {
+  base,
   variants: {
     color: {
       primary:
@@ -79,13 +91,17 @@ const ghostButton = cva(baseButtonClass, {
         "bg-transparent text-error-11 hover:bg-error-4 active:bg-error-5 ring-error-7",
       info: "bg-transparent text-info-11 hover:bg-info-4 active:bg-info-5 ring-info-7",
     },
+    iconOnly: {
+      true: "px-2",
+    },
   },
   defaultVariants: {
     color: "neutral",
   },
 });
 
-const selectedButton = cva(baseButtonClass, {
+const SelectedButton = classed("button", {
+  base,
   variants: {
     color: {
       primary: "bg-primary-5 text-primary-11 ring-primary-7",
@@ -95,49 +111,32 @@ const selectedButton = cva(baseButtonClass, {
       error: "bg-error-5 text-error-11 ring-error-7",
       info: "bg-info-5 text-info-11 ring-info-7",
     },
+    iconOnly: {
+      true: "px-2",
+    },
   },
   defaultVariants: {
     color: "neutral",
   },
 });
 
-const button = (colorVariant?: VariantProps<typeof primaryButton>) =>
-  cva("", {
-    variants: {
-      variant: {
-        primary: primaryButton(colorVariant),
-        secondary: secondaryButton(colorVariant),
-        outline: outlineButton(colorVariant),
-        ghost: ghostButton(colorVariant),
-        selected: selectedButton(colorVariant),
-      },
-    },
-  });
+export type ButtonProps = ComponentProps<typeof PrimaryButton> & {
+  variant: "primary" | "secondary" | "outline" | "ghost" | "selected";
+};
 
-export type ButtonType = VariantProps<ReturnType<typeof button>>["variant"];
-export type ButtonColor = VariantProps<typeof primaryButton>["color"];
-
-export interface ButtonProps extends React.ComponentPropsWithoutRef<"button"> {
-  variant: {
-    type: ButtonType;
-    color?: ButtonColor;
-    iconOnly?: boolean;
-  };
-}
-
-export const buttonClass = (variant: ButtonProps["variant"]) =>
-  cn(
-    button({ color: variant.color })({ variant: variant.type }),
-    variant.iconOnly && "px-2"
-  );
-
-export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
-  ({ className, variant, ...props }, ref) => (
-    <button
-      ref={ref}
-      className={cn(buttonClass(variant), className)}
-      {...props}
-    />
-  )
+export const Button = deriveClassed<typeof PrimaryButton, ButtonProps>(
+  (props, ref) => {
+    switch (props.variant) {
+      case "primary":
+        return <PrimaryButton ref={ref} {...props} />;
+      case "secondary":
+        return <SecondaryButton ref={ref} {...props} />;
+      case "outline":
+        return <OutlineButton ref={ref} {...props} />;
+      case "ghost":
+        return <GhostButton ref={ref} {...props} />;
+      case "selected":
+        return <SelectedButton ref={ref} {...props} />;
+    }
+  }
 );
-Button.displayName = "Button";

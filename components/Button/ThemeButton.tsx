@@ -14,7 +14,8 @@ export function ThemeButton() {
       <span className="hidden dark:inline-block">
         <Tooltip content={"明亮模式"}>
           <Button
-            variant={{ type: "ghost", iconOnly: true }}
+            variant="ghost"
+            iconOnly
             aria-label="Toggle light Mode"
             onClick={() => {
               setTheme("light");
@@ -27,7 +28,8 @@ export function ThemeButton() {
       <span className="inline-block dark:hidden">
         <Tooltip content={"黑暗模式"}>
           <Button
-            variant={{ type: "ghost", iconOnly: true }}
+            variant="ghost"
+            iconOnly
             aria-label="Toggle dark Mode"
             onClick={() => {
               setTheme("dark");

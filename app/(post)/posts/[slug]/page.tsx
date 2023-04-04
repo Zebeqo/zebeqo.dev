@@ -5,8 +5,6 @@ import { getTableOfContents } from "@/lib/toc";
 import { TocSection } from "@/components/TocSection";
 import { UpdateView } from "@/app/(post)/posts/[slug]/UpdateView";
 import { Suspense } from "react";
-import { db } from "@/lib/db";
-import { z } from "zod";
 import Link from "next/link";
 import { Badge } from "@/ui/primitive/Badge";
 import { formatDay } from "@/lib/utils";
@@ -34,7 +32,7 @@ export default async function Page({ params }: { params: { slug: string } }) {
           {post.tags.map((tag) => {
             return (
               <Link key={tag} href={`/posts/tags/${tag}`}>
-                <Badge variant={{ color: "accent" }}>{tag}</Badge>
+                <Badge color="accent">{tag}</Badge>
               </Link>
             );
           })}
