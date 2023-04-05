@@ -2,18 +2,18 @@
 @tailwind components;
 @tailwind utilities;
 
-.animate-fadein-1 {
-  @apply animate-fadein;
+.animate-page-in-1 {
+  @apply animate-page-in;
   animation-delay: calc(1 * 130ms);
 }
 
-.animate-fadein-2 {
-  @apply animate-fadein;
+.animate-page-in-2 {
+  @apply animate-page-in;
   animation-delay: calc(2 * 130ms);
 }
 
-.animate-fadein-3 {
-  @apply animate-fadein;
+.animate-page-in-3 {
+  @apply animate-page-in;
   animation-delay: calc(3 * 130ms);
 }
 

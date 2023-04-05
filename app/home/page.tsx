@@ -5,10 +5,10 @@ import { SkillSection } from "@/app/home/SkillSection";
 export default function Page() {
   return (
     <div className="flex flex-col space-y-12">
-      <IntroSection className="animate-fadein-1" />
+      <IntroSection className="animate-page-in-1" />
       <div className="flex flex-col space-y-12 xl:flex-row xl:justify-between xl:space-y-0">
-        <FeatureSection className="animate-fadein-2" />
-        <SkillSection className="animate-fadein-2" />
+        <FeatureSection className="animate-page-in-2" />
+        <SkillSection className="animate-page-in-2" />
       </div>
     </div>
   );

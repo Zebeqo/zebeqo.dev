@@ -20,7 +20,7 @@ export default function Page({ params }: { params: { tag: string } }) {
 
   return (
     <PostListSection
-      className="animate-fadein-2"
+      className="animate-page-in-2"
       label={`# ${decodedTag}`}
       postList={sortedPosts}
     />

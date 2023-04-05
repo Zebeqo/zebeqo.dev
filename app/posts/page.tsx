@@ -9,7 +9,7 @@ export default function Page() {
 
   return (
     <PostListSection
-      className="animate-fadein-2"
+      className="animate-page-in-2"
       label={"最新发布"}
       postList={sortedPosts}
     />
