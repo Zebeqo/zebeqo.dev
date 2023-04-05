@@ -60,7 +60,7 @@ module.exports = {
           },
         },
         // Page
-        fadein: {
+        "page-in": {
           "0%": { transform: "translateY(18px)", opacity: 0 },
           "100%": { transform: "translateY(0)", opacity: 1 },
         },
@@ -73,7 +73,7 @@ module.exports = {
         "slide-down-fade": "slide-down-fade 0.4s cubic-bezier(0.16, 1, 0.3, 1)",
         "slide-left-fade": "slide-left-fade 0.4s cubic-bezier(0.16, 1, 0.3, 1)",
         // Page
-        fadein: "fadein .6s both",
+        "page-in": "page-in .6s both",
       },
     },
   },
