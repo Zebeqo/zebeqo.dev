@@ -1,8 +1,6 @@
 import { CalendarDaysIcon, EyeIcon } from "@heroicons/react/20/solid";
 import Link from "next/link";
-import { ViewsNumber } from "@/components/ViewsNumber";
-import { LoadingDots } from "@/components/LoadingDots";
-import { Suspense } from "react";
+import { ViewsNumberContainer } from "@/components/ViewsNumber";
 import { cn } from "@/lib/utils";
 
 export function PostCard({
@@ -37,10 +35,7 @@ export function PostCard({
         <div className="flex items-center space-x-1">
           <EyeIcon className="h-4 w-4" />
           <div>
-            <Suspense fallback={<LoadingDots />}>
-              <ViewsNumber slug={slug} />
-            </Suspense>{" "}
-            次浏览
+            <ViewsNumberContainer slug={slug} /> 次浏览
           </div>
         </div>
       </div>
