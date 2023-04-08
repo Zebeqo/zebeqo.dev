@@ -1,0 +1,20 @@
+---
+title: bangumi.app 项目回顾
+date: 2023-3-29
+summary: 受 daily.dev 启发的一个番组计划客户端，使用 Next.js 13 App Router。
+tags:
+  - Case Study
+---
+
+## 背景
+
+番组计划(bangumi) 是中文互联网最大的 ACGN 维基社区，目前正在社区化开发新网站。新网站提供了完善的 OAuth 2.0 用户认证和 RESTful API，非常适合开发第三方应用。
+
+<Image
+  src={"/images/bangumi-dot-app-review/bangumi-api-repo.png"}
+  width={710 / 2}
+  height={413 / 2}
+  alt="bangumi-api-repo"
+/>
+
+Next.js 13 推出了 App Router，支持布局、嵌套路由，并默认使用 [React Server Components](https://react.dev/blog/2023/03/22/react-labs-what-we-have-been-working-on-march-2023#react-server-components)
