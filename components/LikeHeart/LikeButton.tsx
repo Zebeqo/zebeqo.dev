@@ -8,7 +8,7 @@ import { LikeHeart } from "@/ui/general/LikeHeart";
 import { cn } from "@/lib/utils";
 import { Tooltip } from "@/ui/primitive/Tooltip";
 
-const LikeButtonContainer = memo(({ slug }: { slug: string }) => {
+export const LikeButton = memo(({ slug }: { slug: string }) => {
   const { data } = usePostLikes(slug);
   const mutateLike = useMutatePostLike();
   const [batchedLikes, setBatchedLikes] = useState(0);
@@ -65,6 +65,4 @@ const LikeButtonContainer = memo(({ slug }: { slug: string }) => {
     </>
   );
 });
-LikeButtonContainer.displayName = "LikeButton";
-
-export { LikeButtonContainer as LikeButton };
+LikeButton.displayName = "LikeButton";
