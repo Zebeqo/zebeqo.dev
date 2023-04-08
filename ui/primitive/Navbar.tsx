@@ -1,6 +1,6 @@
 "use client";
 
-import { forwardRef, memo, useEffect, useMemo } from "react";
+import { forwardRef, memo, useMemo } from "react";
 import { cn } from "@/lib/utils";
 import { atom, createStore, Provider, useAtomValue } from "jotai";
 import Link from "next/link";

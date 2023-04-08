@@ -5,7 +5,7 @@ import { NavbarItem, Navbar as NavbarRoot } from "@/ui/primitive/Navbar";
 import { nav } from "@/config/nav";
 
 export function Navbar() {
-  const pathname = usePathname().split("/")[1];
+  const pathname = usePathname().split("/").at(1) ?? "";
 
   return (
     <NavbarRoot value={pathname}>
