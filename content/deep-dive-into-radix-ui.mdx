@@ -1,0 +1,561 @@
+---
+title: 深入理解 Radix UI
+date: 2023-3-17
+summary: 在 Radix UI 之上创作的组件库 shadcn/ui 是今年前端最火的组件库，发布两个多月以来，已经有 10k+ star。本文将带你深入理解 Radix UI，让你创作出像 shadcn/ui 一样的组件并使用它。
+tags:
+  - Tailwind CSS
+  - Radix UI
+last_modified_at: 2023-3-30
+---
+
+## 实用函数 `cn`
+
+shadcn/ui 使用 Tailwind CSS 对 Radix UI 进行样式。
+
+在样式过程中通常会使用一个实用函数，它包含两个 Tailwind CSS 相关的库，`clsx` 和 `tailwind-merge`。一个用来合并 Tailwind CSS 类名，一个用来根据条件构造字符串。
+
+```tsx
+// 根据条件构造字符串
+clsx("foo", true && "bar", "baz");
+//=> 'foo bar baz'
+
+// 合并 Tailwind CSS 类名
+twMerge("px-2 py-1 bg-red hover:bg-dark-red", "p-3 bg-[#B91C1C]");
+//=> 'hover:bg-dark-red p-3 bg-[#B91C1C]'
+```
+
+然后组合成实用函数 `cn`
+
+```tsx
+import type { ClassValue } from "clsx";
+import { clsx } from "clsx";
+import { twMerge } from "tailwind-merge";
+
+export function cn(...inputs: ClassValue[]) {
+  return twMerge(clsx(inputs));
+}
+```
+
+这样在编写 React 组件时，就可以使用 `cn` 函数来合并基础 Tailwind CSS 类和 prop 传入的类名。使组件 API 更加灵活。
+
+```tsx
+import { cn } from "./utils";
+
+export function YourComponent({ className, conditionProp, ...props }) {
+  return (
+    <YourComponent
+      className={cn(
+        "...your base Tailwind CSS class",
+        conditionProp ? "...some class" : "...other class",
+        className
+      )}
+      {...props}
+    />
+  );
+}
+```
+
+## Radix UI 相关设计模式
+
+Radix UI 是一个 low level 的组件库，它提供了一系列无样式的基础组件，这些组件提供了灵活、强大的 API，让你可以根据自己的需求组合和扩展组件，可以帮助你快速构建高质量、可访问的设计系统和 Web 应用程序。
+
+想要理解 Radix UI，首先要了解前端组件设计中两个非常重要的设计模式。
+
+### Container/Presentational Pattern
+
+Container/Presentational Pattern 旨在将组件的职责分离，提高代码的可重用性和可维护性。该模式将组件分为两个主要类型：**容器组件**和**展示组件** 。
+
+- **容器组件（Container Components）** 负责管理数据和状态，并将它们通过 props 传递给展示组件（Presentation Components）。它们通常包含业务逻辑、数据获取、事件处理和状态管理等代码。容器组件的主要目的是为了提供数据和行为给展示组件，以便展示组件能够以一种可重用和无状态的方式呈现 UI。
+- **展示组件（Presentation Components）** 只负责呈现数据和用户界面，只包含 UI 相关状态，只接收来自容器组件的输入。展示组件的主要目的是将数据转换为可视化的 UI，它们不应该包含业务逻辑、状态或数据获取等代码。
+
+使用 Container/Presentational Pattern 可以带来很多好处，例如将代码分离为独立的可重用部分、提高组件的可测试性、使代码更易于理解和维护等。
+
+### Compound Pattern
+
+复合模式 (Compound Pattern) 旨在创建多个组件，协同完成一个任务。这些组件可以灵活地组合和配置，而不需要传递复杂的 props。
+
+Compound Pattern 通常使用 React 的 Context API 来实现，通过 Provider 组件来提供状态和方法给子组件。子组件可以使用 useContext hook 来访问 Provider 提供的值。
+
+### 例子
+
+结合这两个设计模式的一个简化例子是如下 `Select` 组件，它包含了一个触发按钮 `SelectTrigger` 和一个列表 `SelectList`。触发按钮可以控制列表的显示和隐藏，列表可以包含多个菜单项。该例子仅用于说明这两个设计模式的使用，没有实现完整的功能。
+
+- Select 文件是一个使用了复合模式的展示组件，它只通过 Context API 维护了 UI 的状态和方法，与业务无关。
+
+```jsx title="Select.tsx"
+import Icon from "./Icon";
+
+const SelectContext = createContext();
+
+function Select(props) {
+  const [open, setOpen] = useState(false);
+
+  return (
+    <div className="select">
+      <SelectContext.Provider value={{ open, setOpen }}>
+        {props.children}
+      </SelectContext.Provider>
+    </div>
+  );
+}
+
+function SelectTrigger() {
+  const { open, setOpen } = React.useContext(SelectContext);
+
+  return (
+    <div className="select-btn" onClick={() => setOpen(!open)}>
+      <Icon />
+    </div>
+  );
+}
+
+function SelectList({ children }) {
+  const { open } = React.useContext(SelectContext);
+  return open && <ul className="select-list">{children}</ul>;
+}
+
+function SelectListItem({ children }) {
+  return <li className="select-item">{children}</li>;
+}
+
+export { Select, SelectTrigger, SelectList, SelectListItem };
+```
+
+- MovieSelect 文件是一个容器组件，它使用某个数据获取 Hook 获取了数据，并将数据传递给了展示组件。
+
+```jsx title="MovieSelect.tsx"
+import {
+  Select,
+  SelectTrigger,
+  SelectList,
+  SelectListItem,
+} from "@/ui/primitive/Select";
+
+export function MovieSelect() {
+  const { data: movieList } = useMovieData();
+
+  return (
+    <Select>
+      <SelectTrigger />
+      <SelectList>
+        {movieList.map((movie) => (
+          <SelectListItem>{movie.title}</SelectListItem>
+        ))}
+      </SelectList>
+    </Select>
+  );
+}
+```
+
+Select 组件可复用，你可以使用同样的结构来实现一个食物选择器 `FoodSelect`，只需要将数据获取 Hook 替换为食物数据获取 Hook 即可。
+
+## 深入 Radix UI
+
+理解了上述设计模式和例子后，再去看 Radix UI 的文档，就更容易理解了。比如 Radix UI Select 组件的结构。
+
+> 建议阅读完 [官网相关文档](https://www.radix-ui.com/docs/primitives/components/select) 后再阅读下文。
+
+```jsx
+import * as Select from "@radix-ui/react-select";
+
+export default () => (
+  <Select.Root>
+    <Select.Trigger>
+      <Select.Value />
+      <Select.Icon />
+    </Select.Trigger>
+
+    <Select.Portal>
+      <Select.Content>
+        <Select.ScrollUpButton />
+        <Select.Viewport>
+          <Select.Item>
+            <Select.ItemText />
+            <Select.ItemIndicator />
+          </Select.Item>
+
+          <Select.Group>
+            <Select.Label />
+            <Select.Item>
+              <Select.ItemText />
+              <Select.ItemIndicator />
+            </Select.Item>
+          </Select.Group>
+
+          <Select.Separator />
+        </Select.Viewport>
+        <Select.ScrollDownButton />
+        <Select.Arrow />
+      </Select.Content>
+    </Select.Portal>
+  </Select.Root>
+);
+```
+
+实际上也属于复合组件，只不过 Radix UI 实现的组件功能更加丰富，API 更加强大。由于这些是复合组件，开发者只需要去查看它的 API，关注这些组件的作用、如何使用这些组件即可，不需要关心它们的内部实现。
+
+### Select 组件一览
+
+做了张图，方便理解 Radix UI 的 Select 组件，其他组件的结构也有很多相似之处。
+
+<Image
+  src={"/images/deep-dive-into-radix-ui/select-demo-dark.png"}
+  width={4176}
+  height={2589}
+  alt="select-demo-dark"
+  className="hidden dark:block"
+/>
+
+<Image
+  src={"/images/deep-dive-into-radix-ui/select-demo.png"}
+  width={4176}
+  height={2589}
+  alt="select-demo"
+  className="block dark:hidden"
+/>
+
+额外说明:
+
+- `Select.Root`: 没有 HTML 元素实体。可以理解为控制器，包含 Select 组件的状态，还有相关 `onXXX` 事件。既能可控(直接传入 `value` 和 `open`)，也能不可控(使用 `defaultValue` 和 `defaultOpen`)。我们使用这个子组件来和业务逻辑进行交互，最重要的一个部分。
+
+- `Select.Portal`: 没有 HTML 元素实体。使用 react-dom 中的 `createPortal` API 将选择器的内容传送到 `document.body` 下，这样就不会受到父元素的样式影响。比如如果你没有使用 Portal，那么你的选择器就会受到父元素的 flex 布局影响，造成意想不到的结果，一般都会使用 Portal。但是配合 storybook 中进行测试的时候，会传送出 canvas，导致使用 testing-library 的 Query API 无法获取到元素，这个时候要选择使用 `import { screen } from "@storybook/testing-library"` 来替换 play 函数中的 `canvasElement` 获取元素。
+
+- `Select.ScrollUpButton` 和 `Select.ScrollDownButton`: 这两个组件是用来控制选择器的滚动条的，当选择器的内容超出了当前窗口时，就会显示这两个按钮，用来滚动选择器的内容。具体效果可以在我这个 [storybook](https://storybook.bangumi.app/?path=/story/ui-select--select-edge) 浏览。
+
+- `Select.Arrow`: 配合 `position: Popover` 使用，如图
+
+<Image
+  src={"/images/deep-dive-into-radix-ui/select-demo-popover-dark.png"}
+  width={3589}
+  height={2267}
+  alt="select-demo-dark"
+  className="hidden dark:block"
+/>
+
+<Image
+  src={"/images/deep-dive-into-radix-ui/select-demo-popover.png"}
+  width={3589}
+  height={2267}
+  alt="select-demo"
+  className="block dark:hidden"
+/>
+
+## Radix UI 实践
+
+对于 Radix UI 的使用我参考了 [shadcn/ui](https://ui.shadcn.com/docs) 。后面的例子我使用了他的 [Select 组件](https://ui.shadcn.com/docs/primitives/select) ，建议提前浏览一遍了解一下。
+
+shadn/ui 是以通用为目的实现的，个人使用的时候，通常以他的实现作为基础，根据自己的设计和项目需求进行修改。
+
+### 目录结构
+
+```ASCII
+.
+├── components/
+│   ├── Select/
+│   │   ├── FoodSelect.tsx
+│   │   ├── FoodSelect.stories.tsx
+│   │   ├── MovieSelect.tsx
+│   │   └── MovieSelect.stories.tsx
+│   ├── Header.tsx
+│   └── Footer.tsx
+└── ui/
+    ├── Select.tsx
+    └── Select.stories.tsx
+```
+
+首先介绍一下我使用 Radix UI 时的目录结构，有助于理解下文。
+
+- `ui/` 目录: 放与项目逻辑无关的 Presentation Components。
+- `components/` 目录: 放项目相关的组件。如果是使用了 Compound Pattern && Presentation Components 的 Container Components，会新建一个以这个组件命名的目录，如 `components/Select` 目录。
+
+### Presentational Component
+
+使用 Radix UI 构建 Presentational Component 最常用的有两个步骤：
+
+1. 将项目逻辑中碰不到的、可简化的，封装进相邻子组件。
+
+<Image
+  src={"/images/deep-dive-into-radix-ui/radix_ui-encapsulate-demo-dark.png"}
+  width={2364}
+  height={1783}
+  alt="radix_ui-encapsulate-demo-dark"
+  className="hidden dark:block"
+/>
+
+<Image
+  src={"/images/deep-dive-into-radix-ui/radix_ui-encapsulate-demo.png"}
+  width={2364}
+  height={1783}
+  alt="radix_ui-encapsulate-demo"
+  className="block dark:hidden"
+/>
+
+- `Select.Icon`: 这个图标通常可以固定，一个向下的小箭头，直接封装进 `Select.Trigger`。
+- `Select.Portal`: 如[之前所述](#select-组件一览)，功能性组件，没有实体也没有可用 event handler，直接封装进 `Select.Content`。
+- `Select.Viewport`: 一个容器组件(HTML 层面上的)，如果没有和逻辑相关的特殊样式要求，也可以直接封装进 `Select.Content`。
+- `Select.ScrollUpButton` 和 `Select.ScrollDownButton`: 在 [shadn/ui](https://ui.shadcn.com/docs/primitives/select) 的实现中，直接删除了，如果需要的话同样可以封装进 `Select.Content`。
+- `Select.ItemText`: 这个组件可以简化为 `Select.Item` 的 chilren prop 直系组件，直接封装进 `Select.Item`。
+- `Select.ItemIndicator`: 同 `Select.Icon`，直接封装进 `Select.Item`。
+- `Select.Arrow`: 没有用 `position: "Popover"` 模式，不需要使用，直接删除。
+
+2. 为子组件添加样式。最终代码如下:
+
+```tsx title="@/ui/Select.tsx"
+"use client";
+
+import * as React from "react";
+import * as SelectPrimitive from "@radix-ui/react-select";
+import { Check, ChevronDown } from "lucide-react"; // icon library
+
+import { cn } from "@/lib/utils";
+
+const Select = SelectPrimitive.Root;
+
+const SelectGroup = SelectPrimitive.Group;
+
+const SelectValue = SelectPrimitive.Value;
+
+const SelectTrigger = React.forwardRef<
+  React.ElementRef<typeof SelectPrimitive.Trigger>,
+  React.ComponentPropsWithoutRef<typeof SelectPrimitive.Trigger>
+>(({ className, children, ...props }, ref) => (
+  <SelectPrimitive.Trigger
+    ref={ref}
+    className={cn(
+      "flex h-10 w-full items-center justify-between rounded-md border border-slate-300 bg-transparent py-2 px-3 text-sm placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-slate-400 focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 dark:border-slate-700 dark:text-slate-50 dark:focus:ring-slate-400 dark:focus:ring-offset-slate-900",
+      className
+    )}
+    {...props}
+  >
+    {children}
+    <ChevronDown className="h-4 w-4 opacity-50" />
+  </SelectPrimitive.Trigger>
+));
+SelectTrigger.displayName = SelectPrimitive.Trigger.displayName;
+
+const SelectContent = React.forwardRef<
+  React.ElementRef<typeof SelectPrimitive.Content>,
+  React.ComponentPropsWithoutRef<typeof SelectPrimitive.Content>
+>(({ className, children, ...props }, ref) => (
+  <SelectPrimitive.Portal>
+    <SelectPrimitive.Content
+      ref={ref}
+      className={cn(
+        "relative z-50 min-w-[8rem] overflow-hidden rounded-md border border-slate-100 bg-white text-slate-700 shadow-md animate-in fade-in-80 dark:border-slate-800 dark:bg-slate-800 dark:text-slate-400",
+        className
+      )}
+      {...props}
+    >
+      <SelectPrimitive.Viewport className="p-1">
+        {children}
+      </SelectPrimitive.Viewport>
+    </SelectPrimitive.Content>
+  </SelectPrimitive.Portal>
+));
+SelectContent.displayName = SelectPrimitive.Content.displayName;
+
+const SelectLabel = React.forwardRef<
+  React.ElementRef<typeof SelectPrimitive.Label>,
+  React.ComponentPropsWithoutRef<typeof SelectPrimitive.Label>
+>(({ className, ...props }, ref) => (
+  <SelectPrimitive.Label
+    ref={ref}
+    className={cn(
+      "py-1.5 pr-2 pl-8 text-sm font-semibold text-slate-900 dark:text-slate-300",
+      className
+    )}
+    {...props}
+  />
+));
+SelectLabel.displayName = SelectPrimitive.Label.displayName;
+
+const SelectItem = React.forwardRef<
+  React.ElementRef<typeof SelectPrimitive.Item>,
+  React.ComponentPropsWithoutRef<typeof SelectPrimitive.Item>
+>(({ className, children, ...props }, ref) => (
+  <SelectPrimitive.Item
+    ref={ref}
+    className={cn(
+      "relative flex cursor-default select-none items-center rounded-sm py-1.5 pr-2 pl-8 text-sm font-medium outline-none focus:bg-slate-100 data-[disabled]:pointer-events-none data-[disabled]:opacity-50 dark:focus:bg-slate-700",
+      className
+    )}
+    {...props}
+  >
+    <span className="absolute left-2 flex h-3.5 w-3.5 items-center justify-center">
+      <SelectPrimitive.ItemIndicator>
+        <Check className="h-4 w-4" />
+      </SelectPrimitive.ItemIndicator>
+    </span>
+
+    <SelectPrimitive.ItemText>{children}</SelectPrimitive.ItemText>
+  </SelectPrimitive.Item>
+));
+SelectItem.displayName = SelectPrimitive.Item.displayName;
+
+const SelectSeparator = React.forwardRef<
+  React.ElementRef<typeof SelectPrimitive.Separator>,
+  React.ComponentPropsWithoutRef<typeof SelectPrimitive.Separator>
+>(({ className, ...props }, ref) => (
+  <SelectPrimitive.Separator
+    ref={ref}
+    className={cn("-mx-1 my-1 h-px bg-slate-100 dark:bg-slate-700", className)}
+    {...props}
+  />
+));
+SelectSeparator.displayName = SelectPrimitive.Separator.displayName;
+
+export {
+  Select,
+  SelectGroup,
+  SelectValue,
+  SelectTrigger,
+  SelectContent,
+  SelectLabel,
+  SelectItem,
+  SelectSeparator,
+};
+```
+
+### Container Component
+
+封装成 Presentational Component 后，就可以在 Container Component 中使用了。按照需求结合 hook 和 props 接入业务逻辑，如下。
+
+- 例子 1:
+
+```tsx title="@/components/Select/FoodSelect.tsx"
+"use client";
+
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectLabel,
+  SelectSeparator,
+  SelectTrigger,
+  SelectValue,
+} from "@/ui/primitive/Select";
+
+export function FoodSelect({ userId }: { userId: number }) {
+  const { data: foodList } = useFoodListData();
+  const { data: userData } = useUserData(userId);
+  const mutateUser = useUserMutation();
+
+  return (
+    <Select
+      onValueChange={(value: string) =>
+        mutateUser.mutate({
+          userId,
+          food: value,
+        })
+      }
+      defaultValue={userData.food}
+    >
+      <SelectTrigger className="w-[180px]">
+        <SelectValue />
+      </SelectTrigger>
+      <SelectContent>
+        <SelectGroup>
+          <SelectLabel>Fruits</SelectLabel>
+          {foodList.fruits.map((fruit) => (
+            <SelectItem key={fruit} value={fruit}>
+              {fruit}
+            </SelectItem>
+          ))}
+        </SelectGroup>
+        <SelectSeparator />
+        <SelectGroup>
+          <SelectLabel>Vegetables</SelectLabel>
+          {foodList.vegetables.map((vegetable) => (
+            <SelectItem key={vegetable} value={vegetable}>
+              {vegetable}
+            </SelectItem>
+          ))}
+        </SelectGroup>
+        <SelectSeparator />
+        <SelectGroup>
+          <SelectLabel>Meats</SelectLabel>
+          {foodList.meats.map((meat) => (
+            <SelectItem key={meat} value={meat}>
+              {meat}
+            </SelectItem>
+          ))}
+        </SelectGroup>
+      </SelectContent>
+    </Select>
+  );
+}
+```
+
+- 例子 2:
+
+```tsx title="@/components/Select/FoodSelect.tsx"
+"use client";
+
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectLabel,
+  SelectSeparator,
+  SelectTrigger,
+  SelectValue,
+} from "@/ui/primitive/Select";
+
+export function FoodSelect(
+  props: React.ComponentPropsWithoutRef<typeof Select>
+) {
+  return (
+    <Select {...props}>
+      <SelectTrigger className="w-[180px]">
+        <SelectValue placeholder="Select a food" />
+      </SelectTrigger>
+      <SelectContent>
+        <SelectGroup>
+          <SelectLabel>Fruits</SelectLabel>
+          <SelectItem value="apple">Apple</SelectItem>
+          <SelectItem value="banana">Banana</SelectItem>
+          <SelectItem value="blueberry">Blueberry</SelectItem>
+          <SelectItem value="grapes">Grapes</SelectItem>
+          <SelectItem value="pineapple">Pineapple</SelectItem>
+        </SelectGroup>
+        <SelectSeparator />
+        <SelectGroup>
+          <SelectLabel>Vegetables</SelectLabel>
+          <SelectItem value="aubergine">Aubergine</SelectItem>
+          <SelectItem value="broccoli">Broccoli</SelectItem>
+          <SelectItem value="carrot" disabled>
+            Carrot
+          </SelectItem>
+          <SelectItem value="courgette">Courgette</SelectItem>
+          <SelectItem value="leek">Leek</SelectItem>
+        </SelectGroup>
+        <SelectSeparator />
+        <SelectGroup>
+          <SelectLabel>Meat</SelectLabel>
+          <SelectItem value="beef">Beef</SelectItem>
+          <SelectItem value="chicken">Chicken</SelectItem>
+          <SelectItem value="lamb">Lamb</SelectItem>
+          <SelectItem value="pork">Pork</SelectItem>
+        </SelectGroup>
+      </SelectContent>
+    </Select>
+  );
+}
+```
+
+```tsx
+import { FoodSelect } from "@/components/Select/FoodSelect";
+
+export default function Form() {
+  const [food, setFood] = React.useState<string | null>(null);
+  ...
+
+  return (
+    ...
+      <FoodSelect onValueChange={(value) => setFood(value)} />
+    ...
+  );
+}
+```
