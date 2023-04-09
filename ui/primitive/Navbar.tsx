@@ -1,6 +1,6 @@
 "use client";
 
-import { forwardRef, memo, useMemo } from "react";
+import { useMemo } from "react";
 import { cn } from "@/lib/utils";
 import { atom, createStore, Provider, useAtomValue } from "jotai";
 import Link from "next/link";
@@ -9,66 +9,57 @@ import { motion } from "framer-motion";
 export const navbarStore = createStore();
 
 const activeValueAtom = atom<string | null>(null);
-activeValueAtom.debugLabel = "activeValueAtom";
 
-const Navbar = forwardRef<
-  React.ElementRef<"nav">,
-  React.ComponentPropsWithoutRef<"nav"> & { value: string }
->(({ className, children, value, ...props }, ref) => {
+const Navbar = ({
+  value,
+  children,
+}: {
+  value: string;
+  children: React.ReactNode;
+}) => {
   navbarStore.set(activeValueAtom, value);
 
   return (
     <Provider store={navbarStore}>
-      <nav
-        ref={ref}
-        className={cn("h-fit rounded-full bg-neutral-6 p-1", className)}
-        {...props}
-      >
+      <nav className="h-fit rounded-full bg-neutral-6 p-1">
         <ul className="flex items-center space-x-2">{children}</ul>
       </nav>
     </Provider>
   );
-});
-Navbar.displayName = "Navbar";
+};
 
-const NavbarItem = memo(
-  forwardRef<
-    React.ElementRef<"li">,
-    Omit<React.ComponentPropsWithoutRef<"li">, "value"> & { value: string }
-  >(({ className, value, children, ...props }, ref) => {
-    const isSelectedAtom = useMemo(
-      () => atom((get) => get(activeValueAtom) === value),
-      [value]
-    );
-    isSelectedAtom.debugLabel = `is${
-      value[0].toUpperCase() + value.slice(1)
-    }SelectedAtom`;
+const NavbarItem = ({
+  value,
+  children,
+}: {
+  value: string;
+  children: React.ReactNode;
+}) => {
+  const isSelectedAtom = useMemo(
+    () => atom((get) => get(activeValueAtom) === value),
+    [value]
+  );
 
-    const isSelected = useAtomValue(isSelectedAtom);
+  const isSelected = useAtomValue(isSelectedAtom);
 
-    return (
-      <li
-        className={cn(
-          "relative z-10 px-3 py-1 text-sm font-bold text-neutral-12",
-          isSelected && "z-0",
-          className
-        )}
-        ref={ref}
-        {...props}
-      >
-        <Link href={`/${value}`} className="relative z-10">
-          {children}
-        </Link>
-        {isSelected && (
-          <motion.div
-            layoutId="thumb"
-            className="absolute inset-0 z-0 rounded-full bg-neutral-1"
-          />
-        )}
-      </li>
-    );
-  })
-);
-NavbarItem.displayName = "NavbarItem";
+  return (
+    <li
+      className={cn(
+        "relative z-10 px-3 py-1 text-sm font-bold text-neutral-12",
+        isSelected && "z-0"
+      )}
+    >
+      <Link href={`/${value}`} className="relative z-10">
+        {children}
+      </Link>
+      {isSelected && (
+        <motion.div
+          layoutId="thumb"
+          className="absolute inset-0 z-0 rounded-full bg-neutral-1"
+        />
+      )}
+    </li>
+  );
+};
 
 export { Navbar, NavbarItem };
