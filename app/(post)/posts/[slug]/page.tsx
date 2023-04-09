@@ -3,7 +3,7 @@ import { Mdx } from "@/components/Mdx/Mdx";
 import { notFound } from "next/navigation";
 import { getTableOfContents } from "@/lib/toc";
 import { Toc } from "@/components/Toc/Toc";
-import { UpdateView } from "@/app/(post)/posts/[slug]/UpdateView";
+import { UpdateViewContainer } from "@/app/(post)/posts/[slug]/UpdateView";
 import Link from "next/link";
 import { Badge } from "@/ui/components/Badge";
 import { formatDay } from "@/lib/utils";
@@ -62,7 +62,7 @@ export default async function Page({ params }: { params: { slug: string } }) {
         )}
       </div>
 
-      <UpdateView slug={params.slug} />
+      <UpdateViewContainer slug={params.slug} />
 
       <div className="relative flex justify-center xl:justify-between">
         <Mdx code={post.body.code} />
