@@ -1,4 +1,5 @@
 import "@/styles/globals.css";
+import "core-js/features/array/at";
 import "lxgw-wenkai-lite-webfont/style.css";
 import { Noto_Sans_SC } from "next/font/google";
 import QueryProvider, {
@@ -13,6 +14,7 @@ import JotaiProvider, {
 import { Header } from "@/app/Header";
 import { navbarStore } from "@/ui/components/Navbar";
 import { Footer } from "@/app/Footer";
+import { Polyfill } from "@/app/Polyfill";
 
 // use in production
 // https://github.com/vercel/next.js/issues/45080
@@ -78,6 +80,7 @@ export default function RootLayout({
             <JotaiProvider>
               {/*{JotaiDevToolsComponent}*/}
               <TooltipProvider>
+                <Polyfill />
                 <Header className="mb-4" />
                 <main className="flex-grow">{children}</main>
                 <Footer className="mt-8" />
