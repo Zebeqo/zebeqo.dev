@@ -7,6 +7,11 @@ import { UpdateView } from "@/app/(post)/posts/[slug]/UpdateView";
 import Link from "next/link";
 import { Badge } from "@/ui/components/Badge";
 import { formatDay } from "@/lib/utils";
+import {
+  Breadcrumb,
+  BreadcrumbLink,
+  BreadcrumbSeparator,
+} from "@/ui/components/Breadcrumb";
 
 export function generateStaticParams() {
   return allPosts.map((post) => ({
@@ -25,6 +30,20 @@ export default async function Page({ params }: { params: { slug: string } }) {
 
   return (
     <>
+      <Breadcrumb className="animate-page-in-1">
+        <BreadcrumbLink as={Link} href="/">
+          主页
+        </BreadcrumbLink>
+        <BreadcrumbSeparator />
+        <BreadcrumbLink as={Link} href="/posts">
+          文章
+        </BreadcrumbLink>
+        <BreadcrumbSeparator />
+        <BreadcrumbLink as="span" isCurrent>
+          {post.title}
+        </BreadcrumbLink>
+      </Breadcrumb>
+
       <div className="prose prose-olive md:prose-lg prose-h1:font-bold">
         <h1>{post.title}</h1>
         <div className="not-prose flex h-fit flex-wrap items-start gap-2">
@@ -44,6 +63,7 @@ export default async function Page({ params }: { params: { slug: string } }) {
       </div>
 
       <UpdateView slug={params.slug} />
+
       <div className="relative flex justify-center xl:justify-between">
         <Mdx code={post.body.code} />
         <div className="mt-10 hidden xl:block">
