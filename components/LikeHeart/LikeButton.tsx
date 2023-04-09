@@ -4,9 +4,9 @@ import { memo, useState } from "react";
 import { likeScheme, useMutatePostLike, usePostLikes } from "@/hooks/use-like";
 import { useDebouncedCallback } from "use-debounce";
 import { useQueryClient } from "@tanstack/react-query";
-import { LikeHeart } from "@/ui/general/LikeHeart";
+import { LikeHeart } from "@/ui/components/LikeHeart";
 import { cn } from "@/lib/utils";
-import { Tooltip } from "@/ui/primitive/Tooltip";
+import { Tooltip } from "@/ui/components/Tooltip";
 
 export const LikeButton = memo(({ slug }: { slug: string }) => {
   const { data } = usePostLikes(slug);

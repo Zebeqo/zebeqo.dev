@@ -2,11 +2,10 @@ import { allPosts } from "contentlayer/generated";
 import { Mdx } from "@/components/Mdx/Mdx";
 import { notFound } from "next/navigation";
 import { getTableOfContents } from "@/lib/toc";
-import { TocSection } from "@/components/TocSection";
+import { TocSection } from "@/app/(post)/posts/[slug]/TocSection";
 import { UpdateView } from "@/app/(post)/posts/[slug]/UpdateView";
-import { Suspense } from "react";
 import Link from "next/link";
-import { Badge } from "@/ui/primitive/Badge";
+import { Badge } from "@/ui/components/Badge";
 import { formatDay } from "@/lib/utils";
 
 export function generateStaticParams() {
@@ -44,9 +43,7 @@ export default async function Page({ params }: { params: { slug: string } }) {
         )}
       </div>
 
-      <Suspense>
-        <UpdateView slug={params.slug} />
-      </Suspense>
+      <UpdateView slug={params.slug} />
       <div className="relative flex justify-center xl:justify-start xl:space-x-24">
         <Mdx code={post.body.code} />
         <div className="hidden xl:block">

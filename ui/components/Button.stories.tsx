@@ -1,6 +1,6 @@
 import { expect } from "@storybook/jest";
 import type { Meta, StoryObj } from "@storybook/react";
-import { Button } from "@/ui/primitive/Button";
+import { Button } from "@/ui/components/Button";
 import { RowDecorator } from "@/ui/StorybookDecorator";
 import { BoltIcon } from "@heroicons/react/20/solid";
 import { action } from "@storybook/addon-actions";

@@ -1,4 +1,4 @@
-import { Badge } from "@/ui/primitive/Badge";
+import { Badge } from "@/ui/components/Badge";
 import Link from "next/link";
 import { getTagCountSorted } from "@/lib/posts";
 

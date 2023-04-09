@@ -1,4 +1,4 @@
-import { classed } from "classed.config";
+import { classed } from "@/classed.config";
 
 export const Badge = classed("span", {
   base: "inline-flex select-none items-center justify-center font-medium whitespace-nowrap text-xs px-3 rounded-md py-1.5 hover:text-white hover:bg-accent-9",

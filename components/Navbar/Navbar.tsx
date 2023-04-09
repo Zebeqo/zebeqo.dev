@@ -1,7 +1,7 @@
 "use client";
 
 import { usePathname } from "next/navigation";
-import { NavbarItem, Navbar as NavbarRoot } from "@/ui/primitive/Navbar";
+import { NavbarItem, Navbar as NavbarRoot } from "@/ui/components/Navbar";
 import { nav } from "@/config/nav";
 
 export function Navbar() {

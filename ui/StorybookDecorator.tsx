@@ -1,5 +1,5 @@
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
-import { TooltipProvider } from "@/ui/primitive/Tooltip";
+import { TooltipProvider } from "@/ui/components/Tooltip";
 
 export const RootDecorator = (Story: React.ComponentType) => {
   return (

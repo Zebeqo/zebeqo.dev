@@ -9,7 +9,7 @@ import { useMounted } from "@/hooks/use-mounted";
 import type { TableOfContents } from "@/lib/toc";
 import { cn } from "@/lib/utils";
 import * as Separator from "@radix-ui/react-separator";
-import { LikeHeart as LikeButtonUI } from "@/ui/general/LikeHeart";
+import { LikeHeart } from "@/ui/components/LikeHeart";
 import { LikeButton } from "@/components/LikeHeart/LikeButton";
 import { Suspense } from "react";
 import { LikesNumber } from "@/components/LikesNumber";
@@ -46,7 +46,7 @@ export function TocSection({ toc, slug }: TocProps & { slug: string }) {
       </div>
       <Separator.Root className="relative my-4 h-px bg-neutral-6" decorative>
         <div className="absolute -left-6 -top-[19px] scale-75">
-          <Suspense fallback={<LikeButtonUI step={0} />}>
+          <Suspense fallback={<LikeHeart step={0} />}>
             <LikeButton slug={slug} />
           </Suspense>
         </div>

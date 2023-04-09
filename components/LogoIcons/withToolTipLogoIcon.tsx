@@ -1,4 +1,4 @@
-import { Tooltip } from "@/ui/primitive/Tooltip";
+import { Tooltip } from "@/ui/components/Tooltip";
 
 export interface WithToolTipLogoIconProps {
   LogoIcon: React.FunctionComponent<
