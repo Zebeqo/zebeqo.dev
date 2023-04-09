@@ -6,12 +6,12 @@ import QueryProvider, {
 } from "@/components/Provider/QueryProvider";
 import type { Metadata } from "next";
 import ThemeProvider from "@/components/Provider/ThemeProvider";
-import { TooltipProvider } from "@/ui/primitive/Tooltip";
+import { TooltipProvider } from "@/ui/components/Tooltip";
 import JotaiProvider, {
   JotaiDevTools,
 } from "@/components/Provider/JotaiProvider";
 import { Header } from "@/app/Header";
-import { navbarStore } from "@/ui/primitive/Navbar";
+import { navbarStore } from "@/ui/components/Navbar";
 import { Footer } from "@/app/Footer";
 
 // use in production

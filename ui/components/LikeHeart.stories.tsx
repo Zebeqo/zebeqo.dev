@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/react";
-import { LikeHeart } from "@/ui/general/LikeHeart";
+import { LikeHeart } from "@/ui/components/LikeHeart";
 import { action } from "@storybook/addon-actions";
 
 const meta = {

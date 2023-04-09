@@ -1,4 +1,4 @@
-import { classed } from "classed.config";
+import { classed } from "@/classed.config";
 import type { ComponentProps } from "@tw-classed/react";
 import { makeStrict } from "@tw-classed/react";
 import { objectKeys } from "@/lib/utils";

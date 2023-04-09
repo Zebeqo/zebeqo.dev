@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/react";
-import { Badge } from "@/ui/primitive/Badge";
+import { Badge } from "@/ui/components/Badge";
 import type { Color } from "@/lib/color";
 import { colorArray } from "@/lib/color";
 

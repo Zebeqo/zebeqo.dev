@@ -3,8 +3,8 @@
 import { MoonIcon, SunIcon } from "@heroicons/react/24/outline";
 
 import { useTheme } from "next-themes";
-import { Button } from "@/ui/primitive/Button";
-import { Tooltip } from "@/ui/primitive/Tooltip";
+import { Button } from "@/ui/components/Button";
+import { Tooltip } from "@/ui/components/Tooltip";
 
 export function ThemeButton() {
   const { setTheme } = useTheme();
