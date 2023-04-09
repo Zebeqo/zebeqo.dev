@@ -2,7 +2,7 @@ import { allPosts } from "contentlayer/generated";
 import { Mdx } from "@/components/Mdx/Mdx";
 import { notFound } from "next/navigation";
 import { getTableOfContents } from "@/lib/toc";
-import { TocSection } from "@/app/(post)/posts/[slug]/TocSection";
+import { Toc } from "@/components/Toc/Toc";
 import { UpdateView } from "@/app/(post)/posts/[slug]/UpdateView";
 import Link from "next/link";
 import { Badge } from "@/ui/components/Badge";
@@ -44,11 +44,11 @@ export default async function Page({ params }: { params: { slug: string } }) {
       </div>
 
       <UpdateView slug={params.slug} />
-      <div className="relative flex justify-center xl:justify-start xl:space-x-24">
+      <div className="relative flex justify-center xl:justify-between">
         <Mdx code={post.body.code} />
-        <div className="hidden xl:block">
-          <div className="sticky top-32 max-w-sm">
-            <TocSection toc={toc} slug={params.slug} />
+        <div className="mt-10 hidden xl:block">
+          <div className="sticky top-32 w-56">
+            <Toc toc={toc} slug={params.slug} />
           </div>
         </div>
       </div>
