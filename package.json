@@ -24,6 +24,7 @@
     "class-variance-authority": "0.4.0",
     "clsx": "1.2.1",
     "contentlayer": "^0.3.0",
+    "core-js": "^3.30.0",
     "dayjs": "^1.11.7",
     "framer-motion": "^10.3.2",
     "jotai": "^2.0.3",
