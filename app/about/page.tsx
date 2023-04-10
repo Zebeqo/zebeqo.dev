@@ -5,5 +5,5 @@ export function generateMetadata() {
 }
 
 export default function Page() {
-  return <>under construction</>;
+  return <p className="animate-page-in-1">under construction</p>;
 }
