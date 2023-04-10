@@ -5,7 +5,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
     <>
       <HeadSection
         title="项目"
-        description="我在做的一些 web 项目 ️🔨"
+        description="我在做的一些 web 项目 🛠️"
         className="animate-page-in-1"
       />
       {children}
