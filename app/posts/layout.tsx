@@ -8,7 +8,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
       <HeadSection
         title="文章"
         description="一些我写的关于编程的文章 ✍️️"
-        className="animate-page-in-1 mt-4"
+        className="animate-page-in-1"
       />
       <div className="mt-10 flex flex-col space-y-12 lg:flex-row lg:justify-between lg:space-y-0">
         {children}
