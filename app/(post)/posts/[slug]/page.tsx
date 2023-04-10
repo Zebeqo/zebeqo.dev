@@ -5,7 +5,7 @@ import { getTableOfContents } from "@/lib/toc";
 import { Toc } from "@/components/Toc/Toc";
 import { UpdateViewContainer } from "@/app/(post)/posts/[slug]/UpdateView";
 import Link from "next/link";
-import { Badge } from "@/ui/components/Badge";
+import { BadgeLink } from "@/ui/components/Badge";
 import { formatDay } from "@/lib/utils";
 import {
   Breadcrumb,
@@ -47,13 +47,11 @@ export default async function Page({ params }: { params: { slug: string } }) {
       <div className="prose prose-olive md:prose-lg prose-h1:font-bold">
         <h1>{post.title}</h1>
         <div className="not-prose flex h-fit flex-wrap items-start gap-2">
-          {post.tags.map((tag) => {
-            return (
-              <Link key={tag} href={`/posts/tags/${tag}`}>
-                <Badge color="accent">{tag}</Badge>
-              </Link>
-            );
-          })}
+          {post.tags.map((tag) => (
+            <BadgeLink key={tag} href={`/posts/tags/${tag}`} color="accent">
+              {tag}
+            </BadgeLink>
+          ))}
         </div>
         {post.last_modified_at && (
           <blockquote className="text-neutral-11">
