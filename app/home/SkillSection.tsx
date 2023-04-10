@@ -17,7 +17,7 @@ const Skill = ({
   children: React.ReactNode;
 }) => {
   return (
-    <div className="flex w-[380px] flex-col space-y-4">
+    <div className="flex w-full flex-col space-y-4 sm:w-[380px]">
       <h2 className="font-serif text-4xl font-bold text-primary-11">{name}</h2>
       <p className="mt-4 text-neutral-11">{description}</p>
       {children}
@@ -33,7 +33,7 @@ const SkillGroup = ({
   children: React.ReactNode;
 }) => (
   <div className="flex items-center space-x-4">
-    <p className="font-serif text-xl">{label}：</p>
+    <p className="hidden font-serif text-xl min-[420px]:block">{label}：</p>
     <div className="flex space-x-4">{children}</div>
   </div>
 );
