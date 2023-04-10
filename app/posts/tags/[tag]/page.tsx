@@ -9,6 +9,14 @@ export function generateStaticParams() {
   }));
 }
 
+export function generateMetadata({ params }: { params: { tag: string } }) {
+  const decodedTag = decodeURIComponent(params.tag);
+
+  return {
+    title: `#${decodedTag} | 文章`,
+  };
+}
+
 export default function Page({ params }: { params: { tag: string } }) {
   const decodedTag = decodeURIComponent(params.tag);
 
