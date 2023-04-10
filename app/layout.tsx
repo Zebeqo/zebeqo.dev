@@ -7,7 +7,6 @@ import QueryProvider, {
 } from "@/components/Provider/QueryProvider";
 import type { Metadata } from "next";
 import ThemeProvider from "@/components/Provider/ThemeProvider";
-import { TooltipProvider } from "@/ui/components/Tooltip";
 import JotaiProvider, {
   JotaiDevTools,
 } from "@/components/Provider/JotaiProvider";
@@ -79,12 +78,10 @@ export default function RootLayout({
           <QueryProvider>
             <JotaiProvider>
               {/*{JotaiDevToolsComponent}*/}
-              <TooltipProvider>
-                <Polyfill />
-                <Header className="mb-4" />
-                <main className="flex-grow">{children}</main>
-                <Footer className="mt-8" />
-              </TooltipProvider>
+              <Polyfill />
+              <Header className="mb-4" />
+              <main className="flex-grow">{children}</main>
+              <Footer className="mt-8" />
             </JotaiProvider>
             <ReactQueryDevtools
               initialIsOpen={false}
