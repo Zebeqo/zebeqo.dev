@@ -2,6 +2,12 @@ import { FeatureSection } from "@/app/home/FeatureSection";
 import { IntroSection } from "@/app/home/IntroSection";
 import { SkillSection } from "@/app/home/SkillSection";
 
+export function generateMetadata() {
+  return {
+    title: "主页",
+  };
+}
+
 export default function Page() {
   return (
     <div className="flex flex-col space-y-12">

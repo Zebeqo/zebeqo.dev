@@ -19,6 +19,14 @@ export function generateStaticParams() {
   }));
 }
 
+export function generateMetadata({ params }: { params: { slug: string } }) {
+  const post = allPosts.find((post) => post.slug === params.slug);
+
+  return {
+    title: post?.title ?? "",
+  };
+}
+
 export default async function Page({ params }: { params: { slug: string } }) {
   const post = allPosts.find((post) => post.slug === params.slug);
 

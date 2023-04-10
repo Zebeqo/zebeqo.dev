@@ -2,6 +2,12 @@ import { allPosts } from "contentlayer/generated";
 import dayjs from "dayjs";
 import { PostListSection } from "@/components/PostListSection";
 
+export function generateMetadata() {
+  return {
+    title: "文章",
+  };
+}
+
 export default function Page() {
   const sortedPosts = allPosts.sort((a, b) => {
     return dayjs(b.date).unix() - dayjs(a.date).unix();
