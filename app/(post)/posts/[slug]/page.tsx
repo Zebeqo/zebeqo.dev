@@ -3,7 +3,7 @@ import { Mdx } from "@/components/Mdx/Mdx";
 import { notFound } from "next/navigation";
 import { getTableOfContents } from "@/lib/toc";
 import { Toc } from "@/components/Toc/Toc";
-import { UpdateViewContainer } from "@/app/(post)/posts/[slug]/UpdateView";
+import { UpdateViewContainer } from "@/components/UpdateView";
 import Link from "next/link";
 import { BadgeLink } from "@/ui/components/Badge";
 import { formatDay } from "@/lib/utils";
