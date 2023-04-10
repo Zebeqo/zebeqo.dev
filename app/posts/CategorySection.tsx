@@ -1,5 +1,4 @@
-import { Badge } from "@/ui/components/Badge";
-import Link from "next/link";
+import { BadgeLink } from "@/ui/components/Badge";
 import { getTagCountSorted } from "@/lib/posts";
 
 export function CategorySection({ className }: { className?: string }) {
@@ -9,13 +8,15 @@ export function CategorySection({ className }: { className?: string }) {
       <div className="mt-6 flex h-fit flex-wrap items-start gap-2">
         {getTagCountSorted()
           .slice(0, 6)
-          .map((tag) => {
-            return (
-              <Link key={tag[0]} href={`/posts/tags/${tag[0]}`}>
-                <Badge color="accent">{tag[0]}</Badge>
-              </Link>
-            );
-          })}
+          .map((tag) => (
+            <BadgeLink
+              key={tag[0]}
+              href={`/posts/tags/${tag[0]}`}
+              color="accent"
+            >
+              {tag[0]}
+            </BadgeLink>
+          ))}
       </div>
     </section>
   );
