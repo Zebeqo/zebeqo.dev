@@ -17,7 +17,7 @@ export function withToolTipLogoIcon({
   }: React.ComponentPropsWithoutRef<"svg">) {
     return (
       <Tooltip content={content} delayDuration={0}>
-        <a href={href} target="_blank">
+        <a href={href} target="_blank" aria-label={content}>
           <LogoIcon {...props} />
         </a>
       </Tooltip>
