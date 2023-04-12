@@ -6,15 +6,39 @@ tags:
   - Case Study
 ---
 
-## 背景
+## 前期选择
 
-番组计划(bangumi) 是中文互联网最大的 ACGN 维基社区，目前正在社区化开发新网站。新网站提供了完善的 OAuth 2.0 用户认证和 RESTful API，非常适合开发第三方应用。
+[daily.dev](https://app.daily.dev) 是我每天都在用的一个 Web App，它提供了一个聚合的开发者资讯平台。我非常喜欢它的布局和 card + modal 的交互方式，于是打算也使用这些概念创建一个 Web App。
 
-<Image
-  src={"/images/bangumi-dot-app-review/bangumi-api-repo.png"}
-  width={710 / 2}
-  height={413 / 2}
-  alt="bangumi-api-repo"
-/>
+番组计划(bangumi) 是中文互联网最大的 ACGN 维基社区，目前正在社区化开发新网站。新网站提供了完善的 OAuth 2.0 用户验证和 RESTful API，非常适合开发第三方应用。所以题材方面我选择制作一个番组计划客户端。
 
-Next.js 13 推出了 App Router，支持布局、嵌套路由，并默认使用 [React Server Components](https://react.dev/blog/2023/03/22/react-labs-what-we-have-been-working-on-march-2023#react-server-components)
+Next.js 13 推出了 App Router，支持布局、嵌套路由，并默认使用 [React Server Components](https://react.dev/blog/2023/03/22/react-labs-what-we-have-been-working-on-march-2023#react-server-components)。我被这些新特性的 mental model 和 DX 所吸引，于是决定使用 Next.js 13 App Router 作为框架来开发。
+
+## 用户验证
+
+NextAuth.js 是一个 Next.js 的开源用户验证库，包含了对 OAuth 2.0 支持。它能够根据应用提供的配置选项生成一个 OAuth 2.0 的客户端，并将其挂载到 Next.js 的 API 端点上，自动配置 OAuth 2.0 的各个步骤，包括获取 access token、获取用户信息等。这样就可以在客户端和服务器端使用 NextAuth.js 提供的 hook 来获取 `session`。我在 `session` 中放了用户信息和 `access token`。
+
+我一开始的选择是在的服务器端中使用 NextAuth.js 的 `getServerSession` hook 得到用户 `session` 然后传递给 `SessionProvider`，这样就可以在客户端中直接使用 `useSession` hook 获取用户 `session`。但是由于我制作的这个 Web App 全程都是需要 `session` 的，所以 `getServerSession` 必须放到 RootLayout 中，又因为 App Router 是嵌套路由，这就导致我所有的页面都不能使用 Static Rendering 了。因为 `getServerSession` 这个服务器端 hook 显然使用了 `cookies()` 和 `headers()` 这两个 dynamic function，使用 dynamic function 的路由会强制转换成 Dynamic Rendering。
+
+> - Static Rendering: 渲染发生在 build time，然后将其缓存到 CDN 中，每次请求都会使用缓存。
+> - Dynamic Rendering: 渲染发生在 request time，每次请求都会重新渲染。
+
+我的 App 预测大部分是 Static Rendering，全部页面 Dynamic Rendering 对我来说是不可接受的，所以我后面就将验证放到了客户端。
+
+对于我这个应用的首页加载来说，把验证放到客户端的用户体验其实没有放到服务器端好的。因为在客户端做验证通常是 Static Rendering，用户只能在页面加载完，hydrate 之后再向 NextAuth.js 生成的 API 端点获取 `session` ，然后再放到 `SessionProvider` 中。而在服务器端做验证可以直接在 SSR 的时候就处理用户的 request，把他的 `session` 放到 `SessionProvider` 中。所以把验证放到客户端反而会有更长的 Time to Interactive (TTI)。我有一个部署了的，把验证放到服务器端的站点 https://dynamic.bangumi.app/ ，可以共同打开进行对比，验证在服务器端的站点用户体验明显更好。
+
+目前还没有不那么 hacky 的解决方案，只能持续关注这个 [issue](https://github.com/nextauthjs/next-auth/issues/5647#issuecomment-1342099364) ，验证部分就先告一段落。
+
+## 数据获取和渲染
+
+页面的话当前做了四个部分，**每日放送**、**当前最热**、**排行榜**、**用户收藏**。只有用户收藏页面是用户特定的，其它三个功能的页面内容都是固定的。我选择将三个内容固定的页面的数据获取放在服务器端，将用户收藏页面的数据获取放在客户端。
+
+把内容固定的页面的数据获取放到服务器端很好理解，服务器端的数据获取可以发生在 build time 缓存，用于 Static Rendering 。正好这三个功能也不需要时效性，在 Next.js 13 App Route 新的 Fetch API 中设置一个合适的 revalidate 时间就可以实现 Incremental Static Regeneration (ISR) 渲染模式。
+
+用户收藏页面的数据获取放在客户端的原因：
+
+1. 用户收藏页面需要时效性，如果在服务器端无缓存动态获取数据的话直接告别 Static Rendering，只能 Dynamic Rendering。
+2. 本来就是一个第三方应用，使用的是公共 API，就算在 Dynamic Rendering 的时候通过服务器端获取数据也是使用公共 API，无法发挥服务器的优势。
+3. 这种页面不需要 SEO，SSR 对于 SEO 的优势意义不大。
+
+所以这种情况下最好的渲染模式就是 **Static Rendering with Client-Side `fetch`**
