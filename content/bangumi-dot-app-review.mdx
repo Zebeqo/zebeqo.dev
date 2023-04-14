@@ -8,37 +8,191 @@ tags:
 
 ## 前期选择
 
-[daily.dev](https://app.daily.dev) 是我每天都在用的一个 Web App，它提供了一个聚合的开发者资讯平台。我非常喜欢它的布局和 card + modal 的交互方式，于是打算也使用这些概念创建一个 Web App。
+[daily.dev](https://app.daily.dev) 是我每天都在用的一个 Web App，它提供了一个聚合的开发者资讯平台。我非常喜欢它的布局和 card + modal 的交互方式，于是打算也使用这些概念开发一个 Web App。
 
-番组计划(bangumi) 是中文互联网最大的 ACGN 维基社区，目前正在社区化开发新网站。新网站提供了完善的 OAuth 2.0 用户验证和 RESTful API，非常适合开发第三方应用。所以题材方面我选择制作一个番组计划客户端。
+番组计划 (bangumi) 是中文互联网最大的 ACGN 维基社区，目前正在社区化开发新网站。新网站提供了完善的 [OAuth 2.0](https://github.com/bangumi/api/blob/master/docs-raw/How-to-Auth.md) 用户验证和 RESTful [API](https://bangumi.github.io/api/)，非常适合开发第三方应用。所以我选择制作一个番组计划客户端。
 
 Next.js 13 推出了 App Router，支持布局、嵌套路由，并默认使用 [React Server Components](https://react.dev/blog/2023/03/22/react-labs-what-we-have-been-working-on-march-2023#react-server-components)。我被这些新特性的 mental model 和 DX 所吸引，于是决定使用 Next.js 13 App Router 作为框架来开发。
 
-## 用户验证
+## 渲染
 
-NextAuth.js 是一个 Next.js 的开源用户验证库，包含了对 OAuth 2.0 支持。它能够根据应用提供的配置选项生成一个 OAuth 2.0 的客户端，并将其挂载到 Next.js 的 API 端点上，自动配置 OAuth 2.0 的各个步骤，包括获取 access token、获取用户信息等。这样就可以在客户端和服务器端使用 NextAuth.js 提供的 hook 来获取 `session`。我在 `session` 中放了用户信息和 `access token`。
+由于我做的是第三方应用，不能直接访问后端数据资源，只能通过 [Bangumi API](https://bangumi.github.io/api/)。所以本质上这是前后端分离架构，使用 Client Side Rendering(CSR) 即可。但是如今使用在服务器上渲染内容的渲染模式，既可以提升用户体验、SEO，也能减少客户端和后端的请求负担。
 
-我一开始的选择是在的服务器端中使用 NextAuth.js 的 `getServerSession` hook 得到用户 `session` 然后传递给 `SessionProvider`，这样就可以在客户端中直接使用 `useSession` hook 获取用户 `session`。但是由于我制作的这个 Web App 全程都是需要 `session` 的，所以 `getServerSession` 必须放到 RootLayout 中，又因为 App Router 是嵌套路由，这就导致我所有的页面都不能使用 Static Rendering 了。因为 `getServerSession` 这个服务器端 hook 显然使用了 `cookies()` 和 `headers()` 这两个 dynamic function，使用 dynamic function 的路由会强制转换成 Dynamic Rendering。
+### 基础概念
 
-> - Static Rendering: 渲染发生在 build time，然后将其缓存到 CDN 中，每次请求都会使用缓存。
-> - Dynamic Rendering: 渲染发生在 request time，每次请求都会重新渲染。
+- Static Rendering: 渲染发生在 build time，然后将其缓存到 CDN 中，每次请求都会使用缓存。
 
-我的 App 预测大部分是 Static Rendering，全部页面 Dynamic Rendering 对我来说是不可接受的，所以我后面就将验证放到了客户端。
+<Image
+  src={"/images/bangumi-dot-app-review/static-rendering.png"}
+  width={3456}
+  height={1992}
+  alt="static-rendering"
+  description={
+    <>
+      图片来自{" "}
+      <a
+        target="_blank"
+        href="https://www.patterns.dev/posts/rendering-patterns"
+      >
+        patterns.dev
+      </a>
+    </>
+  }
+/>
 
-对于我这个应用的首页加载来说，把验证放到客户端的用户体验其实没有放到服务器端好的。因为在客户端做验证通常是 Static Rendering，用户只能在页面加载完，hydrate 之后再向 NextAuth.js 生成的 API 端点获取 `session` ，然后再放到 `SessionProvider` 中。而在服务器端做验证可以直接在 SSR 的时候就处理用户的 request，把他的 `session` 放到 `SessionProvider` 中。所以把验证放到客户端反而会有更长的 Time to Interactive (TTI)。我有一个部署了的，把验证放到服务器端的站点 https://dynamic.bangumi.app/ ，可以共同打开进行对比，验证在服务器端的站点用户体验明显更好。
+- Dynamic Rendering (Streaming SSR + React Server Components): 渲染发生在 request time，每次请求都会重新渲染。
 
-目前还没有不那么 hacky 的解决方案，只能持续关注这个 [issue](https://github.com/nextauthjs/next-auth/issues/5647#issuecomment-1342099364) ，验证部分就先告一段落。
+<Image
+  src={"/images/bangumi-dot-app-review/dynamic-rendering.png"}
+  width={3456}
+  height={1992}
+  alt="static-rendering"
+  description={
+    <>
+      图片来自{" "}
+      <a
+        target="_blank"
+        href="https://www.patterns.dev/posts/rendering-patterns"
+      >
+        patterns.dev
+      </a>
+    </>
+  }
+/>
 
-## 数据获取和渲染
+需要注意的是在 Next.js App Route 中， 无论是 Static Rendering 还是 Dynamic Rendering ，在传统的预渲染之前都要先渲染 React Server Component。如图。紫色为 RSC、绿色为 Client Component 也就是传统的 React 组件。
 
-页面的话当前做了四个部分，**每日放送**、**当前最热**、**排行榜**、**用户收藏**。只有用户收藏页面是用户特定的，其它三个功能的页面内容都是固定的。我选择将三个内容固定的页面的数据获取放在服务器端，将用户收藏页面的数据获取放在客户端。
+<Image
+  src={"/images/bangumi-dot-app-review/diagram-from-dan-twitter.jpg"}
+  width={2214}
+  height={1238}
+  alt="diagram-from-dan-twitter"
+  description={
+    <>
+      图片来自 Dan 的{" "}
+      <a
+        target="_blank"
+        href="https://twitter.com/dan_abramov/status/1633574036767662080"
+      >
+        推文
+      </a>
+    </>
+  }
+/>
 
-把内容固定的页面的数据获取放到服务器端很好理解，服务器端的数据获取可以发生在 build time 缓存，用于 Static Rendering 。正好这三个功能也不需要时效性，在 Next.js 13 App Route 新的 Fetch API 中设置一个合适的 revalidate 时间就可以实现 Incremental Static Regeneration (ISR) 渲染模式。
+- RSC 只在服务器上运行，对 bundle-size 没有任何影响。它们的代码永远不会下载到客户端，有助于减小 bundle 大小并提高启动时间。
+- RSC 可以运行服务器端 (Node.js) 代码，直接访问数据源，例如数据库、文件系统或（微）服务。支持 async/await。(没有客户端-服务器瀑布流)
+- RSC 与 Client Components（即传统的 React 组件）无缝集成。RSC 可以在服务器上加载数据，并将其作为 props 传递给 Client Components，从而允许客户端处理页面的交互部分的渲染。
+- RSC 可以动态选择要呈现哪些 Client Components，从而允许客户端仅下载呈现页面所需的最小代码量。(自动代码分割)
+- RSC 在重新加载时保留客户端状态。这意味着当 Server Component 树被重新获取时，客户端状态、焦点甚至正在进行的动画都不会被中断或重置。
+- RSC 支持 Streaming。结合 Suspense 使用，先渲染重要内容，Streaming 部分用 Loading UI 占位，等待数据加载完成后再渲染替换。
+
+### 渲染模式选择
+
+页面的话目前做了四个部分，**每日放送**、**当前最热**、**排行榜**、**用户收藏**。只有用户收藏页面是用户特定的，其它三个功能的页面内容都是用户无关的。
+
+#### 每日放送 (ISR)
+
+首先排除 Dynamic Rendering。页面内容是用户无关的，所以不需要每次请求都重新渲染。
+
+每日放送使用的是 [`/calendar`](https://bangumi.github.io/api/#/%E6%9D%A1%E7%9B%AE/getCalendar) API，但是这个 API 提供的数据无法满足 card 的需求，必须单独对每个条目进行请求。如果使用 Client Side Rendering(CSR) 的话，大量的请求会导致用户页面加载时间过长。
+
+解决方法是使用 Next.js 扩展的 Fetch API 对这些请求缓存。每日放送所用的数据要么更新频率较低，要么更新幅度较低对用户体验影响不大，所以设置一个较长的 revalidate 间隔即可。最终的渲染模式是 Incremental Static Regeneration (ISR)。
+
+<Image
+  src={"/images/bangumi-dot-app-review/incremental-static-regeneration.png"}
+  width={3456}
+  height={2058}
+  alt="ISR"
+  description={
+    <>
+      图片来自{" "}
+      <a
+        target="_blank"
+        href="https://www.patterns.dev/posts/rendering-patterns"
+      >
+        patterns.dev
+      </a>
+    </>
+  }
+/>
+
+#### 今日放送 (On-demand ISR)
+
+> TODO
+
+今日放送是每日放送其中的一页，如果仍旧使用基于时间间隔的 revalidate 的话，无法保证过零点后立刻更新数据。所以需要使用 On-demand ISR。
+
+在本应用中实现 On-demand ISR 可以在 Next.js 定义一个带有密钥的 API 端点用于 revalidate 今日放送页面，然后使用 Vercel Cron Job 或者 GitHub Action 做一个 Webhook 定时每天零点调用这个 API 端点。
+
+<Image
+  src={
+    "/images/bangumi-dot-app-review/on-demand-incremental-static-regeneration.png"
+  }
+  width={3456}
+  height={2058}
+  alt="On-demand ISR"
+  description={
+    <>
+      图片来自{" "}
+      <a
+        target="_blank"
+        href="https://www.patterns.dev/posts/rendering-patterns"
+      >
+        patterns.dev
+      </a>
+    </>
+  }
+/>
+
+用户无关的页面的数据获取放到服务器端是因为这几个页面不需要很强的时效性，可以使用 Next.js 13 App Route 新 Fetch API 将数据获取的 HTTP 请求设置一个合理的间隔持久化缓存。也就是 Incremental Static Regeneration (ISR) 渲染模式。
 
 用户收藏页面的数据获取放在客户端的原因：
 
-1. 用户收藏页面需要时效性，如果在服务器端无缓存动态获取数据的话直接告别 Static Rendering，只能 Dynamic Rendering。
-2. 本来就是一个第三方应用，使用的是公共 API，就算在 Dynamic Rendering 的时候通过服务器端获取数据也是使用公共 API，无法发挥服务器的优势。
-3. 这种页面不需要 SEO，SSR 对于 SEO 的优势意义不大。
+1. 用户收藏页面需要时效性，如果放在服务器端动态获取数据的话直接告别 Static Rendering，只能 Dynamic Rendering。
+2. 本来就是一个第三方应用，不能直接访问后端数据资源，就算在服务器端获取数据也是使用公共 API，无法发挥服务器的优势。
+3. 页面不需要 SEO，SSR 对于 SEO 所带来的优势意义不大。
 
 所以这种情况下最好的渲染模式就是 **Static Rendering with Client-Side `fetch`**
+
+<Image
+  src={
+    "/images/bangumi-dot-app-review/static-rendering-with-client-side-fetch.png"
+  }
+  width={3456}
+  height={2028}
+  alt="static-rendering-with-client-side-fetch"
+  description={
+    <>
+      图片来自{" "}
+      <a
+        target="_blank"
+        href="https://www.patterns.dev/posts/rendering-patterns"
+      >
+        patterns.dev
+      </a>
+    </>
+  }
+/>
+
+使用 **Static Rendering with Client-Side `fetch`** 模式的时候通常需要 Skeleton UI 来减少数据读取后的 layout shift。我使用的客户端数据获取库是 [React Query](https://tanstack.com/query/latest)(已经改名为 TanStack Query)，支持 Suspense，将 Skeleton UI 放置在 Suspense 中的 `fallback` 即可。
+
+## 用户授权
+
+NextAuth.js 是一个 Next.js 的开源用户验证库，包含了对 OAuth 2.0 支持。它能够根据应用提供的配置选项生成一个 OAuth 2.0 的客户端，并将其挂载到 Next.js 的 API 端点上，自动配置 OAuth 2.0 的各个步骤，包括获取 access token、获取用户信息等。这样就可以在客户端和服务器端使用 NextAuth.js 提供的 hook 来获取 `session`。我在 `session` 中放了用户信息和 `access token`。
+
+我一开始的选择是在服务器端中使用 NextAuth.js 的 `getServerSession` hook 得到请求用户的 `session` 然后传递给 `SessionProvider`，这样就可以在客户端中直接使用 `useSession` hook 获取用户 `session`。但是由于我制作的这个 Web App `SessionProvider` 在 RootLayout，这就导致我所有的页面都不能使用 Static Rendering 了。 因为 `getServerSession` 这个服务器端 hook 需要 `cookies()` 和 `headers()` 这两个 [dynamic function](https://beta.nextjs.org/docs/rendering/static-and-dynamic-rendering#using-dynamic-functions) 获取用户请求中的相关信息去验证，而使用了 dynamic function 的路由会强制转换成 Dynamic Rendering。
+
+我的应用因为是第三方 App，无法直接访问后端数据资源，所以预测大部分是 Static Rendering，全部页面 Dynamic Rendering 对我来说是不可接受的，所以我后面就将验证放到了客户端。
+
+在客户端做验证时，用户只能在页面加载完，hydrate 之后再向 NextAuth.js 生成的 API 端点获取 `session` ，然后再放到 `SessionProvider` 中，这会产生额外的客户端-服务器瀑布流。而在服务器端做验证可以直接在 Dynamic Rendering 的时候就处理用户的 request，把他的 `session` 放到 `SessionProvider` 中。
+
+在客户端做验证的 FCP (First Contentful Paint) 较短，但是 TTI (Time to Interactive) 较长，而在服务器端做验证的 FCP 较长，但是 TTI 较短。可以将这两个域名分别打开 https://www.bangumi.app/ 、 https://dynamic.bangumi.app/ 进行对比感受。
+
+## 数据获取和渲染
+
+## 组件
+
+我选择了 Radix UI 作为基础组件。因为 Radix UI 使用了复合模式 (Compound Pattern)，非常方便组合。
+
+需要知道的是，如果直接将服务器组件导入客户端组件，服务器组件也会变成客户端组件。但是服务器组件是可以作为客户端组件的 `children` 和客户端组件进行组合。使用复合模式组件可以将服务器组件和客户端组件很好地结合在一起。
