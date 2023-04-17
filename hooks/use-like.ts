@@ -11,17 +11,9 @@ export function usePostLikes(slug: string) {
   const { data } = useQuery({
     queryKey: ["likes", slug],
     queryFn: async () => {
-      try {
-        const response = await fetch(
-          `${env.NEXT_PUBLIC_URL}/api/likes/${slug}`
-        );
+      const response = await fetch(`${env.NEXT_PUBLIC_URL}/api/likes/${slug}`);
 
-        return likeScheme.parse(await response.json());
-      } catch (e) {
-        if (e instanceof Error) {
-          console.log(e.message);
-        }
-      }
+      return likeScheme.parse(await response.json());
     },
   });
 

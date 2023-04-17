@@ -10,17 +10,9 @@ export function usePostViews(slug: string) {
   const { data } = useQuery({
     queryKey: ["views", slug],
     queryFn: async () => {
-      try {
-        const response = await fetch(
-          `${env.NEXT_PUBLIC_URL}/api/views/${slug}`
-        );
+      const response = await fetch(`${env.NEXT_PUBLIC_URL}/api/views/${slug}`);
 
-        return viewsScheme.parse(await response.json());
-      } catch (e) {
-        if (e instanceof Error) {
-          console.log(e.message);
-        }
-      }
+      return viewsScheme.parse(await response.json());
     },
   });
 
