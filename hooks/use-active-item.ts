@@ -1,9 +1,9 @@
-import * as React from "react";
+import { useEffect, useState } from "react";
 
 export function useActiveItem(itemIds: string[]) {
-  const [activeId, setActiveId] = React.useState("");
+  const [activeId, setActiveId] = useState("");
 
-  React.useEffect(() => {
+  useEffect(() => {
     const observer = new IntersectionObserver(
       (entries) => {
         entries.forEach((entry) => {

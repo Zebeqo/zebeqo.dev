@@ -1,0 +1,203 @@
+---
+title: React 渲染及其优化
+date: 2022-11-25
+last_modified_at: 2023-3-29
+summary: 理解 React 在什么时候会重渲染，使用 `React.memo` 、`useMemo` 、`useCallback` 优化渲染的常用情况，如何通过 `children` prop 来优化渲染。
+tags:
+  - React
+---
+
+## React 渲染机制
+
+React 只有当状态发生改变的时候才会重渲染。只要状态发生改变了，拥有这个状态的组件就会进行重渲染。
+
+状态发生改变的时候有时也会引起 Context 发生改变。当 Context 发生改变的时候，所以使用该 Context 的组件都会重渲染。
+
+当一个组件重渲染的时候，它的所有子组件也会重渲染。
+
+## React.memo
+
+```tsx
+function HeavyComponent() {
+  return <>...</>;
+}
+export default React.memo(HeavyComponent);
+```
+
+### 纯组件（pure component）
+
+被 `React.memo` 包裹的组件会成为纯组件（pure component）。
+
+纯组件的特点是，当它的父组件重渲染的时候，它只有当 `Props` 发生改变的时候才会重渲染。
+
+<Image
+  src={"/images/react-render-and-optimize/react-memo.png"}
+  width={2360}
+  height={1940}
+  alt="react-memo"
+  className="block dark:hidden"
+/>
+
+<Image
+  src={"/images/react-render-and-optimize/react-memo-dark.png"}
+  width={2360}
+  height={1940}
+  alt="react-memo"
+  className="hidden dark:block"
+/>
+
+## useMemo
+
+```tsx
+const cachedValue = useMemo(() => computeVal(...), [...dependencies])
+```
+
+### 1. 减少大量计算
+
+<Image
+  src={"/images/react-render-and-optimize/use-memo-1-1.png"}
+  width={2040}
+  height={2060}
+  alt="use-memo-1-1"
+  className="block dark:hidden"
+/>
+
+<Image
+  src={"/images/react-render-and-optimize/use-memo-1-1-dark.png"}
+  width={2040}
+  height={2060}
+  alt="use-memo-1-1"
+  className="hidden dark:block"
+/>
+
+<Image
+  src={"/images/react-render-and-optimize/use-memo-1-2.png"}
+  width={2040}
+  height={2060}
+  alt="use-memo-1-2"
+  className="block dark:hidden"
+/>
+
+<Image
+  src={"/images/react-render-and-optimize/use-memo-1-2-dark.png"}
+  width={2040}
+  height={2060}
+  alt="use-memo-1-2"
+  className="hidden dark:block"
+/>
+
+### 2. 减少重渲染
+
+<Image
+  src={"/images/react-render-and-optimize/use-memo-2-1.png"}
+  width={2040}
+  height={2060}
+  alt="use-memo-2-1"
+  className="block dark:hidden"
+/>
+
+<Image
+  src={"/images/react-render-and-optimize/use-memo-2-1-dark.png"}
+  width={2040}
+  height={2060}
+  alt="use-memo-2-1"
+  className="hidden dark:block"
+/>
+
+<Image
+  src={"/images/react-render-and-optimize/use-memo-2-2.png"}
+  width={2040}
+  height={2060}
+  alt="use-memo-2-2"
+  className="block dark:hidden"
+/>
+
+<Image
+  src={"/images/react-render-and-optimize/use-memo-2-2-dark.png"}
+  width={2040}
+  height={2060}
+  alt="use-memo-2-2"
+  className="hidden dark:block"
+/>
+
+## useCallback
+
+useCallback 本质上是 useMemo 返回一个函数的语法糖。
+
+```tsx
+const cachedFn = useCallback(fn, [...dependencies]);
+```
+
+```tsx
+const cachedFn = useMemo(() => fn, [...dependencies]);
+```
+
+以上两行代码是等价的。
+
+### 1. 减少重渲染
+
+<Image
+  src={"/images/react-render-and-optimize/use-callback-1.png"}
+  width={2040}
+  height={2060}
+  alt="use-callback-1"
+  className="block dark:hidden"
+/>
+
+<Image
+  src={"/images/react-render-and-optimize/use-callback-1-dark.png"}
+  width={2040}
+  height={2060}
+  alt="use-callback-1"
+  className="hidden dark:block"
+/>
+
+<Image
+  src={"/images/react-render-and-optimize/use-callback-2.png"}
+  width={2040}
+  height={2060}
+  alt="use-callback-2"
+  className="block dark:hidden"
+/>
+
+<Image
+  src={"/images/react-render-and-optimize/use-callback-2-dark.png"}
+  width={2040}
+  height={2060}
+  alt="use-callback-2"
+  className="hidden dark:block"
+/>
+
+### 2. 自定义 hook
+
+当编写自定义 hook 的时候，通常将返回的函数用 useCallback 缓存，因为你不知道它后续的使用方法，返回的函数没有缓存的话可能会引起其他组件的重渲染。
+
+## children prop
+
+<Tweet id="1623771055943831553" />
+
+### 1. 减少重渲染、prop drilling
+
+<Image
+  src={"/images/react-render-and-optimize/children-prop.png"}
+  width={2160}
+  height={1860}
+  alt="children-prop"
+  className="block dark:hidden"
+/>
+
+<Image
+  src={"/images/react-render-and-optimize/children-prop-dark.png"}
+  width={2160}
+  height={1860}
+  alt="children-prop"
+  className="hidden dark:block"
+/>
+
+### 2. 配合 Server Component
+
+见 [此文](/posts/deep-dive-into-radix-ui#rsc-react-server-component)
+
+## 未来
+
+React 团队正在研究一个编译器 [React Forget](https://www.youtube.com/watch?v=lGEMwh32soc) 来自动完成 memo 。也许以后就可以省去手动使用 `React.memo` 、`useMemo` 、`useCallback` 去优化渲染的步骤了。

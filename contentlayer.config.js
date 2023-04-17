@@ -34,6 +34,7 @@ export const Post = defineDocumentType(() => ({
     last_modified_at: {
       type: "date",
       description: "The last modified date of the post",
+      required: true,
     },
   },
   computedFields: {

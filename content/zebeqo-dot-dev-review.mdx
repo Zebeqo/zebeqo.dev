@@ -1,9 +1,131 @@
 ---
 title: zebeqo.dev 项目回顾
-date: 2023-3-31
-summary: 一个基于 React Server Components 和 MDX 的全栈静态博客项目，使用 Prisma + PlanetScale 存储博客数据。
+date: 2023-4-12
+last_modified_at: 2023-4-17
+summary: 使用 Next.js 13 App Router 和 React Server Components 制作的一个全栈个人网站，数据源来自本地的 MDX 文件和托管 MySQL 数据库中的博客数据。
 tags:
   - Case Study
 ---
 
-## 项目背景
+> 编写中
+
+## 数据源
+
+这是一个个人网站项目，数据源分为两个部分，本地的 MDX 文件和托管 MySQL 数据库中的博客数据。
+
+### MDX
+
+[contentlayer](https://www.contentlayer.dev/) 是一个支持 MDX 的内容处理器，它可以在 build 阶段将 MDX 文件，包含它的元数据 YAML 头文件和内容，转换为类型安全的 JSON 文件，并生成相关 TypeScript type definitions，形成 MDX 与你的应用之间的一层抽象层。JSON 文件可以在 RSC(React Server Components) 使用并转换成 HTML。由于是 RSC，客户端并不会收到 JSON 文件和 contentlayer 的相关代码，减少了 bundle size。
+
+### 数据库
+
+数据库使用 [Prisma](https://www.prisma.io/) + [PlanetScale](https://planetscale.com/)，Prisma 是一个 ORM，PlanetScale 是一个托管的 MySQL 数据库。Prisma 可以根据数据库的 schema 生成数据库客户端 `PrismaClient` 和相关的 TypeScript type definitions 对数据库进行类型安全的操作。
+
+## 渲染
+
+首先，本网站内容目前基本都是静态的。只有两个部分是动态的，一个是浏览量，一个是点赞功能，但这两个内容都不属于主体，延迟加载对用户影响不大。所以本网站目前所有页面都是 Static Rendering with Client-Side `fetch`。Static Rendering 的页面可以被缓存在 CDN 上，这种情况下静态页面的内容加载速度最快。
+
+<Image
+  src={
+    "/images/bangumi-dot-app-review/static-rendering-with-client-side-fetch.png"
+  }
+  width={3456}
+  height={2028}
+  alt="static-rendering-with-client-side-fetch"
+  description={
+    <>
+      图片来自{" "}
+      <a
+        target="_blank"
+        href="https://www.patterns.dev/posts/rendering-patterns"
+      >
+        patterns.dev
+      </a>
+    </>
+  }
+/>
+
+当然 Client-Side `fetch` 也意味着需要在服务器编写 API 端点，并且在客户端使用 react-query 自己管理数据状态。每添加一个新的端点，都会增加不少代码。
+
+### 留言板(未发布)
+
+<Image
+  src={"/images/bangumi-dot-app-review/dynamic-rendering.png"}
+  width={3456}
+  height={1992}
+  alt="static-rendering"
+  description={
+    <>
+      图片来自{" "}
+      <a
+        target="_blank"
+        href="https://www.patterns.dev/posts/rendering-patterns"
+      >
+        patterns.dev
+      </a>
+    </>
+  }
+/>
+
+这个页面的动态内容占主体，终于，我选择使用 Dynamic Rendering。先看一下我做的图，我再解释使用 Dynamic Rendering 的原因。
+
+<Image
+  src={
+    "/images/zebeqo-dot-dev-review/static-rendering-with-client-side-fetch.png"
+  }
+  width={1795}
+  height={1534}
+  alt="static-rendering-with-client-side-fetch"
+  className="block dark:hidden"
+/>
+
+<Image
+  src={
+    "/images/zebeqo-dot-dev-review/static-rendering-with-client-side-fetch-dark.png"
+  }
+  width={1795}
+  height={1534}
+  alt="static-rendering-with-client-side-fetch"
+  className="hidden dark:block"
+/>
+
+<Image
+  src={"/images/zebeqo-dot-dev-review/dynamic-rendering.png"}
+  width={1607}
+  height={1564}
+  alt="dynamic-rendering"
+  className="block dark:hidden"
+/>
+
+<Image
+  src={"/images/zebeqo-dot-dev-review/dynamic-rendering-dark.png"}
+  width={1607}
+  height={1564}
+  alt="dynamic-rendering"
+  className="hidden dark:block"
+/>
+
+> 简易示意图，省略了客户端 parse、render、请求 JS bundle 等步骤。
+
+1. Static Rendering with Client-Side `fetch` 的 TTFB (Time to First Byte) 比 Dynamic Rendering 的短。但是页面的主要内容，通过数据库数据渲染的留言板，Dynamic Rendering 加载得反而更快。因为 Dynamic Rendering 可以更早地向数据库发起请求。
+
+2. 从 UI 上来说，两者没有任何区别。Static Rendering 中预渲染的页面包括布局和留言板的 Skeleton UI，然后等待 Client-Side `fetch` 获取 API 数据后渲染留言板。Dynamic Rendering 中，客户端第一次收到的页面也是渲染的布局和留言板 Skeleton UI，然后等待服务器发送渲染好的留言板 hydrate。
+
+3. DX 方面，Dynamic Rendering 既不需要在服务器创建 `GET` API，也不需要在客户端上编写数据获取逻辑，减少了大量代码。
+
+综合这三点，我选择了 Dynamic Rendering。
+
+## RSC 中的 Mutation
+
+<Tweet id="1647211603673194501" />
+
+RSC 中的 Mutation 目前仍未实现，所以仍需创建 `POST` API 用于客户端发送请求来 Mutation。根据 React 最新的 [blog](https://react.dev/blog/2023/03/22/react-labs-what-we-have-been-working-on-march-2023#react-server-components) 透露的信息显示，RSC 将提出一个叫 **Server Action** 的概念，来将数据从客户端发送到服务器，执行数据库变更和实现表单提交。它通过:
+
+1. 跨服务器/客户端边界传递 Server Action 函数，客户端可以调用这些函数，提供无缝的 RPC。
+2. 渐进增强的表单。渐进增强表单是一种 Web 设计模式，旨在提高表单的可访问性和可用性。它的核心思想是，首先为表单提供基本的 HTML 和服务器端验证，然后通过 JavaScript 为表单增加更多的交互性和可用性。
+
+可以想象，当 RSC Mutation 完成后，也没有必要手动创建 Mutation API 了。这可能会改变很多开发者的开发方式。
+
+在 RSC Mutation 完成之前，目前对于 Dynamic Rendering 页面的 Mutation 的解决方法是: 在客户端对你的 `POST` API 发起请求，然后使用框架的路由 hook 刷新当前页面(可以保持客户端状态)。就这么简单，顶多加个 React 的 `useTransition()` hook 添加 Loading UI。所以仍旧非常局限，当然对于我这个留言板页面来说，这种方式完全够用的。
+
+但是假如我的网站主页 `/home` 是 Dynamic Rendering，然后需要展示留言板的最新留言，当用户在我的留言板页面 `/guestbook` 完成留言，对 `POST` API 发起请求后，刷新完当前页面后，`/guestbook` 的留言板确实是最新的了，但是在使用 Next.js 框架的客户端导航组件 `<Link>` 的时候网站主页的最新留言是不会更新的。有一个比较 rough 的解决方案是把所有通往主页的客户端导航组件 `<Link>` 全部改成原始的 `<a>` ，像第一次加载一样加载主页。但是这种方法会丢失所有的客户端状态，重新 hydrate 整个页面。遇到这种数据 span 多个页面的，我觉得现阶段要么补上 `GET` API 然后换成 Static Rendering with Client-Side `fetch`，要么等即将推出的 [Revalidating components API](https://vercel.com/blog/vercel-cache-api-nextjs-cache#revalidating-components-with-cache-tags)。

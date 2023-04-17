@@ -5,4 +5,12 @@
 
 import { Tweet } from "react-tweet";
 
-export default Tweet;
+const TweetContainer = ({
+  ...props
+}: React.ComponentPropsWithoutRef<typeof Tweet>) => (
+  <div className="not-prose flex flex-col items-center">
+    <Tweet {...props} />
+  </div>
+);
+
+export default TweetContainer;

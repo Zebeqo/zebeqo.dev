@@ -1,7 +1,8 @@
 ---
 title: bangumi.app 项目回顾
 date: 2023-3-29
-summary: 受 daily.dev 启发的一个番组计划客户端，使用 Next.js 13 App Router。
+last_modified_at: 2023-3-29
+summary: 使用 Next.js 13 App Router 和 React Server Components 制作的一个前后端分离应用，后端 API 来自 Bangumi API。
 tags:
   - Case Study
 ---
@@ -20,7 +21,7 @@ Next.js 13 推出了 App Router，支持布局、嵌套路由，并默认使用 
 
 ### 基础概念
 
-- Static Rendering: 渲染发生在 build time，然后将其缓存到 CDN 中，每次请求都会使用缓存。
+- Static Rendering: 服务器和客户端组件都可以在 build time 预渲染在服务器上，预渲染的结果被缓存，后续请求都会使用缓存。预渲染的结果可以被 revalidate，重新去预渲染生成新的结果。
 
 <Image
   src={"/images/bangumi-dot-app-review/static-rendering.png"}
@@ -40,7 +41,7 @@ Next.js 13 推出了 App Router，支持布局、嵌套路由，并默认使用 
   }
 />
 
-- Dynamic Rendering (Streaming SSR + React Server Components): 渲染发生在 request time，每次请求都会重新渲染。
+- Dynamic Rendering (Streaming SSR + React Server Components): 服务器和客户端组件在 request time 渲染，没有缓存，每次请求都会重新渲染。
 
 <Image
   src={"/images/bangumi-dot-app-review/dynamic-rendering.png"}
@@ -85,7 +86,7 @@ Next.js 13 推出了 App Router，支持布局、嵌套路由，并默认使用 
 - RSC 与 Client Components（即传统的 React 组件）无缝集成。RSC 可以在服务器上加载数据，并将其作为 props 传递给 Client Components，从而允许客户端处理页面的交互部分的渲染。
 - RSC 可以动态选择要呈现哪些 Client Components，从而允许客户端仅下载呈现页面所需的最小代码量。(自动代码分割)
 - RSC 在重新加载时保留客户端状态。这意味着当 Server Component 树被重新获取时，客户端状态、焦点甚至正在进行的动画都不会被中断或重置。
-- RSC 支持 Streaming。结合 Suspense 使用，先渲染重要内容，Streaming 部分用 Loading UI 占位，等待数据加载完成后再渲染替换。
+- RSC 支持服务器端 Streaming。
 
 ### 渲染模式选择
 
@@ -145,15 +146,27 @@ Next.js 13 推出了 App Router，支持布局、嵌套路由，并默认使用 
   }
 />
 
-用户无关的页面的数据获取放到服务器端是因为这几个页面不需要很强的时效性，可以使用 Next.js 13 App Route 新 Fetch API 将数据获取的 HTTP 请求设置一个合理的间隔持久化缓存。也就是 Incremental Static Regeneration (ISR) 渲染模式。
+#### 当前最热 (ISR)
 
-用户收藏页面的数据获取放在客户端的原因：
+当前最热是 Bangumi API 里没有，但是网站里有的一个功能。所以这个功能的数据只能通过爬取 id 再单独对每个条目进行请求。所以和 [每日放送](#每日放送-isr) 同理，使用 Incremental Static Regeneration (ISR)。
 
-1. 用户收藏页面需要时效性，如果放在服务器端动态获取数据的话直接告别 Static Rendering，只能 Dynamic Rendering。
-2. 本来就是一个第三方应用，不能直接访问后端数据资源，就算在服务器端获取数据也是使用公共 API，无法发挥服务器的优势。
-3. 页面不需要 SEO，SSR 对于 SEO 所带来的优势意义不大。
+顺便一提，在爬取过程中，我使用了 cheerio 这个库来解析 HTML。但由于我是在 RSC 中使用的，并不会被打包到客户端，减少了 bundle 大小。
 
-所以这种情况下最好的渲染模式就是 **Static Rendering with Client-Side `fetch`**
+#### 排行榜 (ISR)
+
+排行榜使用的是搜索 API，按照评分排序，然后分页取了前五十。搜索 API 的数据依然不够 card 使用，所以仍需再单独对每个条目进行请求。和 [每日放送](#每日放送-isr) 同理，使用 Incremental Static Regeneration (ISR)。
+
+目前分页相关的 UI 还没设计好，如果加上分页功能的话，依然可以使用 Incremental Static Regeneration (ISR)，只不过不可能 Static Rendering 所有的页面，只会 Static Rendering 点击率高的前几页，然后剩下的 on-demand 渲染。on-demand 渲染是第一次渲染的时候 Dynamic Rendering，将结果缓存，后面的就和按时间间隔 ISR 的行为一样了。
+
+> 注意: ISR 和 on-demand ISR 都可以通过 on-demand 渲染页面减少 build 时间，on-demand ISR 指的是可以 on-demand 重新生成页面。
+
+#### 用户收藏 (Static Rendering with Client-Side `fetch`)
+
+用户收藏页面与之前页面的不同之处在于它的内容是用户特定并且需要即时数据的，所以需要考虑 Dynamic Rendering，甚至 [优先考虑 Dynamic Rendering](https://beta.nextjs.org/docs/data-fetching/fundamentals#fetching-data-on-the-server)。
+
+但是这个页面还是不适合 Dynamic Rendering。因为是第三方 APP，就算 Dynamic Rendering 也不能直接访问后端数据资源，还是使用远端的公有 API，无法发挥服务器的优势。并且这个页面不需要 SEO，SSR 对于 SEO 所带来的优势意义不大。
+
+所以这种情况下传统的 Client Side Rendering(CSR) 即可。最后使用的是 Static Rendering with Client-Side `fetch`，因为页面其他 layout 部分还是可以 Static Rendering 的。
 
 <Image
   src={
@@ -175,24 +188,67 @@ Next.js 13 推出了 App Router，支持布局、嵌套路由，并默认使用 
   }
 />
 
-使用 **Static Rendering with Client-Side `fetch`** 模式的时候通常需要 Skeleton UI 来减少数据读取后的 layout shift。我使用的客户端数据获取库是 [React Query](https://tanstack.com/query/latest)(已经改名为 TanStack Query)，支持 Suspense，将 Skeleton UI 放置在 Suspense 中的 `fallback` 即可。
-
 ## 用户授权
 
-NextAuth.js 是一个 Next.js 的开源用户验证库，包含了对 OAuth 2.0 支持。它能够根据应用提供的配置选项生成一个 OAuth 2.0 的客户端，并将其挂载到 Next.js 的 API 端点上，自动配置 OAuth 2.0 的各个步骤，包括获取 access token、获取用户信息等。这样就可以在客户端和服务器端使用 NextAuth.js 提供的 hook 来获取 `session`。我在 `session` 中放了用户信息和 `access token`。
-
-我一开始的选择是在服务器端中使用 NextAuth.js 的 `getServerSession` hook 得到请求用户的 `session` 然后传递给 `SessionProvider`，这样就可以在客户端中直接使用 `useSession` hook 获取用户 `session`。但是由于我制作的这个 Web App `SessionProvider` 在 RootLayout，这就导致我所有的页面都不能使用 Static Rendering 了。 因为 `getServerSession` 这个服务器端 hook 需要 `cookies()` 和 `headers()` 这两个 [dynamic function](https://beta.nextjs.org/docs/rendering/static-and-dynamic-rendering#using-dynamic-functions) 获取用户请求中的相关信息去验证，而使用了 dynamic function 的路由会强制转换成 Dynamic Rendering。
-
-我的应用因为是第三方 App，无法直接访问后端数据资源，所以预测大部分是 Static Rendering，全部页面 Dynamic Rendering 对我来说是不可接受的，所以我后面就将验证放到了客户端。
+NextAuth.js 是一个 Next.js 的开源用户验证库，包含了对 OAuth 2.0 支持。它能够根据应用提供的配置选项生成一个 OAuth 2.0 的客户端，并将其挂载到 Next.js 的 API 端点上，自动配置 OAuth 2.0 的各个步骤，包括获取 access token、获取用户信息等。之后就可以在客户端和服务器端使用 NextAuth.js 提供的 hook 来获取 `session`。我在 `session` 中放了用户信息和 `access token`。
 
 在客户端做验证时，用户只能在页面加载完，hydrate 之后再向 NextAuth.js 生成的 API 端点获取 `session` ，然后再放到 `SessionProvider` 中，这会产生额外的客户端-服务器瀑布流。而在服务器端做验证可以直接在 Dynamic Rendering 的时候就处理用户的 request，把他的 `session` 放到 `SessionProvider` 中。
 
+我一开始的选择是在服务器端做验证，使用 NextAuth.js 的 `getServerSession` hook 得到请求用户的 `session` 然后传递给 `SessionProvider`。这样就可以在客户端中直接使用 `useSession` hook 获取用户 `session`。但是由于我制作的这个 Web App `SessionProvider` 在 RootLayout，这就导致我所有的页面都不能使用 Static Rendering 了。 因为 `getServerSession` 这个服务器端 hook 需要 `cookies()` 和 `headers()` 这两个 [dynamic function](https://beta.nextjs.org/docs/rendering/static-and-dynamic-rendering#using-dynamic-functions) 获取用户请求中的相关信息去验证，而使用了 dynamic function 的路由会强制转换成 Dynamic Rendering。所以我后面就将验证放到了客户端。
+
 在客户端做验证的 FCP (First Contentful Paint) 较短，但是 TTI (Time to Interactive) 较长，而在服务器端做验证的 FCP 较长，但是 TTI 较短。可以将这两个域名分别打开 https://www.bangumi.app/ 、 https://dynamic.bangumi.app/ 进行对比感受。
 
-## 数据获取和渲染
+如果你顺便浏览了 https://dynamic.bangumi.app/ 的其它页面，你可能会发现，之前那些 ISR 的界面被强制转换成 Dynamic Rendering 之后页面加载依然很快。因为对于设置了 revalidate 间隔的 `fetch()` 来说，虽然 Dynamic Rendering 不能像 ISR 那样预渲染页面缓存页面，但可以缓存 `fetch()` 的结果，下次请求时直接返回缓存的结果，大大减少了 Dynamic Rendering 的时间。
 
-## 组件
+## 数据获取
 
-我选择了 Radix UI 作为基础组件。因为 Radix UI 使用了复合模式 (Compound Pattern)，非常方便组合。
+在本项目中，服务器端的数据获取(在 RSC 中做数据获取)已经在上文 [渲染模式选择](#渲染模式选择) 介绍了，这里主要介绍客户端的数据获取优化。我使用 [react-query](https://tanstack.com/query/latest/docs/react/overview) 来管理客户端的数据获取。
 
-需要知道的是，如果直接将服务器组件导入客户端组件，服务器组件也会变成客户端组件。但是服务器组件是可以作为客户端组件的 `children` 和客户端组件进行组合。使用复合模式组件可以将服务器组件和客户端组件很好地结合在一起。
+客户端的数据获取分为两部分。第一个是用户收藏页面 client-side `fetch` 的 card 数据。这个数据收藏的分页 API 就可以全部得到全部所需信息，没有什么好优化的。我只利用 react-query 的 Infinite Queries
+做了一个 Infinite Scroll。
+
+第二个是每个 card 都附带的 modal 中的数据。modal 中的数据和用户收藏页面 card 数据同理，都是用户特定并且需要即时数据的，所以按照之前的分析，需要客户端数据获取。况且这个组件是所有 card 都有的，如果这个使用 dynamic rendering 了，那么所有页面都会变成 dynamic rendering，不能使用 static rendering 了。Next.js 13 App Route 页面的渲染模式默认是根据页面的 RSC 数据获取策略来决定的，
+
+> 如果是刚接触 RSC 的可能会疑惑，modal 和 modal 中的内容都需要大量交互，意味着大部分都是客户端组件，在客户端组件中如何使用 RSC 做数据获取呢？确实，RSC 如果被 import 到客户端组件就会同化为客户端组件，但是服务器组件可以作为客户端组件的 `children` 和客户端组件进行组合。但是如果参照我这篇文章去构造组件的话可以将服务器组件和客户端组件很好地结合在一起，这也是我使用 Radix UI 作为组件库的原因。
+
+### 并行数据获取
+
+modal 中数据最大的问题是角色列表和相关条目的分页数据不满足 UI 需求，需要再单独对对应对象 API 发起请求。请求太多导致瀑布流太长。
+
+<Image
+  src={"/images/bangumi-dot-app-review/sequential-data-fetching.png"}
+  width={1604}
+  height={2086}
+  alt="sequential-data-fetching"
+/>
+
+在使用了 react-query 的 `useQueries` hook 来并行获取数据之后，减少了大量的瀑布流，加载速度提升了两倍。
+
+<Image
+  src={"/images/bangumi-dot-app-review/parallel-data-fetching.png"}
+  width={1656}
+  height={2088}
+  alt="parallel-data-fetching"
+/>
+
+### 乐观更新
+
+乐观更新是指在用户操作之后，先假设操作成功，然后再向服务器发送请求，如果服务器返回失败，再将 UI 还原到操作之前的状态。这样可以减少用户等待时间，提升用户体验。但也要看情况用，如果操作失败的概率很大，那么乐观更新反而会让用户感到更加不安。在本项目中，mutation 集中在修改用户收藏，操作失败只有可能是外部原因，概率很小，所以使用乐观更新是很合适的。
+
+### Suspense
+
+react-query 已经支持 Suspense 模式。使用 Suspense 异步加载组件相比传统的判断 `isLoading` 或者 `status === 'loading'` 等，代码更加简洁和易于管理，提高了开发效率和代码质量。
+
+## 组件库
+
+见 [深入理解 Radix UI#RSC (React Server Component)](/posts/deep-dive-into-radix-ui#rsc-react-server-component)
+
+## 总结
+
+使用 Next.js 13 App Route 给我最大的感受就是 **组合(Compose)** 。如果在以前 Next.js `pages/` 目录中，也可以在 getStaticProps 和 getServerSideProps 写 Server Code，但那是 page level 的，只能作为本页的一个 context。而 RSC 可以导入到任何页面中，Server Code 是 component level 的，RSC 可以像正常的 React 组件一样组合。使用 RSC 之后代码明显更加简洁、容易维护了很多，Server Code 不用全部揉进 getStaticProps 或 getServerSideProps 中，而是可以在所需要组件中单独维护，更加符合单一职责原则。
+
+包括在布局和嵌套路由中，能把你的动态内容和多个布局组合在一起，当 Dynamic Rendering 导航时，局部渲染没改变的布局以下的内容，而不是以前 Next.js `pages/` 目录那样重新渲染整个页面。
+
+比较遗憾的是这是个前后端分离的项目，RSC 最大的意义是可以在 React 中写 Server Code，直接对数据源进行操作而不用写 API，就像在 PHP 或 Ruby on Rails 中一样，只是简单的 "request/response" mental model。
+
+我接下来将依旧使用 Next.js 13 App Route 制作一个全栈的博客，探索 RSC 在全栈中的应用。
