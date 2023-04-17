@@ -18,8 +18,7 @@ module.exports = {
     extend: {
       fontFamily: {
         sans: ["var(--font-noto-sans-sc)"],
-        serif: ["LXGW WenKai Lite"],
-        // mono: ["LXGW WenKai Lite"],
+        serif: ["var(--font-lxgw-wenkai-lite)"],
       },
       colors: {
         primary: toRadixVars("grass"),
