@@ -1,6 +1,10 @@
 "use client";
 
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import {
+  QueryCache,
+  QueryClient,
+  QueryClientProvider,
+} from "@tanstack/react-query";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import { useState } from "react";
 
@@ -18,9 +22,15 @@ export default function QueryProvider({
             suspense: true,
           },
         },
+        queryCache: new QueryCache({
+          onError: (error) => {
+            if (error instanceof Error) {
+              console.error(error.message);
+            }
+          },
+        }),
       })
   );
-
   return (
     <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
   );
