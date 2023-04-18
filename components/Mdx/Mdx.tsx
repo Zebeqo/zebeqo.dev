@@ -1,7 +1,8 @@
 /* eslint-disable jsx-a11y/alt-text */
 import { useMDXComponent } from "next-contentlayer/hooks";
-import Image from "@/components/Mdx/MdxImage";
+import MdxImage from "@/components/Mdx/MdxImage";
 import Link from "@/components/Mdx/MdxLink";
+import Image from "next/image";
 import { Tweet, type TweetProps, type TweetComponents } from "react-tweet";
 
 const tweetComponents: TweetComponents = {
@@ -10,7 +11,7 @@ const tweetComponents: TweetComponents = {
 };
 
 const components = {
-  Image,
+  Image: MdxImage,
   a: Link,
   Tweet: (props: TweetProps) => (
     <div className="not-prose flex flex-col items-center">
