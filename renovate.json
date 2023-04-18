@@ -9,5 +9,6 @@
       "matchUpdateTypes": ["major"],
       "dependencyDashboardApproval": true
     }
-  ]
+  ],
+  "prConcurrentLimit": 0
 }
