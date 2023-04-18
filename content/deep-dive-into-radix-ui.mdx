@@ -2,7 +2,7 @@
 title: 深入理解 Radix UI
 date: 2023-3-17
 last_modified_at: 2023-3-29
-summary: 在 Radix UI 之上创作的组件库 shadcn/ui 是今年前端最火的组件库，发布两个多月以来，已经有 10k+ star。本文将带你按照 shadcn/ui 背后的思想深入理解 Radix UI 并学会使用它。
+summary: 在 Radix UI 之上创作的组件库 shadcn/ui 是今年前端最火的组件库，发布两个多月以来，已经有 10k+ star。本文将以 shadcn/ui 背后的思想深入理解 Radix UI 。
 tags:
   - Tailwind CSS
   - Radix UI
@@ -25,9 +25,9 @@ Container/Presentational Pattern 旨在将组件的职责分离，提高代码�
 
 ### Compound Pattern
 
-复合模式 (Compound Pattern) 旨在创建多个组件，协同完成一个任务。这些组件可以灵活地组合和配置，而不需要传递复杂的 props。
+复合模式 (Compound Pattern) 旨在创建多个组合组件，协同完成一个任务。这些组合组件可以灵活地组合和配置，而不需要传递复杂的 props。
 
-Compound Pattern 通常使用 React 的 Context API 来实现，通过 Provider 组件来提供状态和方法给子组件。子组件可以使用 useContext hook 来访问 Provider 提供的值。
+Compound Pattern 通常使用 React 的 Context API 来实现，通过 Provider 组件来提供状态和方法给组合组件。组合组件可以使用 useContext hook 来访问 Provider 提供的值。
 
 ### 例子
 
@@ -169,9 +169,9 @@ export default () => (
 
 额外说明:
 
-- `Select.Root`: 没有 HTML 元素实体。可以理解为控制器，包含 Select 组件的状态，还有相关 `onXXX` 事件。既能可控(直接传入 `value` 和 `open`)，也能不可控(使用 `defaultValue` 和 `defaultOpen`)。我们使用这个子组件来和业务逻辑进行交互，最重要的一个部分。
+- `Select.Root`: 没有 HTML 元素实体。可以理解为控制器，包含 Select 组件的状态，还有相关 `onXXX` 事件。既能可控(直接传入 `value` 和 `open`)，也能不可控(使用 `defaultValue` 和 `defaultOpen`)。我们使用这个组合组件来和业务逻辑进行交互。这是所有组合组件中最重要的一个部分。
 
-- `Select.Portal`: 没有 HTML 元素实体。使用 react-dom 中的 `createPortal` API 将选择器的内容传送到 `document.body` 下，这样就不会受到父元素的样式影响。比如如果你没有使用 Portal，那么你的选择器就会受到父元素的 flex 布局影响，造成意想不到的结果，一般都会使用 Portal。但是配合 storybook 中进行测试的时候，会传送出 canvas，导致使用 testing-library 的 Query API 无法获取到元素，这个时候要选择使用 `import { screen } from "@storybook/testing-library"` 来替换 play 函数中的 `canvasElement` 获取元素。
+- `Select.Portal`: 没有 HTML 元素实体。使用 react-dom 中的 `createPortal` API 将选择器的内容传送到 `document.body` 下，这样就不会受到父元素的样式影响。比如 `Select` 的父元素有个的 flex 布局，如果你没有使用 Portal，那么你的 `Select` 就会受到影响，造成意想不到的结果，所以通常情况下都会使用 Portal。但是配合 storybook 中进行测试的时候，会传送出 canvas，导致使用 testing-library 的 Query API 无法获取到元素，这个时候只能使用 `import { screen } from "@storybook/testing-library"` 而不是 play 函数中的 `canvasElement` 获取元素。
 
 - `Select.ScrollUpButton` 和 `Select.ScrollDownButton`: 这两个组件是用来控制选择器的滚动条的，当选择器的内容超出了当前窗口时，就会显示这两个按钮，用来滚动选择器的内容。具体效果可以在我这个 [storybook](https://storybook.bangumi.app/?path=/story/ui-select--select-edge) 浏览。
 
@@ -272,7 +272,7 @@ export function YourComponent({ className, conditionProp, ...props }) {
 
 使用 Radix UI 构建 Presentational Component 最常用的有两个步骤：
 
-1. 将项目逻辑中碰不到的、可简化的子组件，封装进相邻子组件。
+1. 将项目逻辑中碰不到的、可简化的组合组件，封装进相邻组合组件。
 
 <Image
   src={"/images/deep-dive-into-radix-ui/radix_ui-encapsulate-demo-dark.png"}
@@ -290,7 +290,7 @@ export function YourComponent({ className, conditionProp, ...props }) {
   className="block dark:hidden"
 />
 
-- `Select.Icon`: 这个图标通常可以固定，一个向下的小箭头，直接封装进 `Select.Trigger`。
+- `Select.Icon`: 这个图标通常可以，直接封装进 `Select.Trigger`。
 - `Select.Portal`: 如[之前所述](#select-组件一览)，功能性组件，没有实体也没有可用 event handler，直接封装进 `Select.Content`。
 - `Select.Viewport`: 一个容器组件(HTML 层面上的)，如果没有和逻辑相关的特殊样式要求，也可以直接封装进 `Select.Content`。
 - `Select.ScrollUpButton` 和 `Select.ScrollDownButton`: 在 [shadn/ui](https://ui.shadcn.com/docs/primitives/select) 的实现中，直接删除了，如果需要的话同样可以封装进 `Select.Content`。
@@ -298,7 +298,9 @@ export function YourComponent({ className, conditionProp, ...props }) {
 - `Select.ItemIndicator`: 同 `Select.Icon`，直接封装进 `Select.Item`。
 - `Select.Arrow`: 没有用 `position: "Popover"` 模式，不需要使用，直接删除。
 
-2. 为子组件添加样式。最终代码如下:
+封装之后的 API 更加简洁，易于使用。如果后面遇到某些特殊情况 API 封装得自由度太小了不方便使用，还可以再使用基础的组合组件重新组合封装，封装出自由度大的组合组件使用，这样就不会影响之前的组合组件。
+
+2. 为组合组件添加样式。最终代码如下:
 
 ```tsx title="@/ui/Select.tsx"
 "use client";
