@@ -14,6 +14,7 @@ import { Header } from "@/app/Header";
 import { navbarStore } from "@/ui/components/Navbar";
 import { Footer } from "@/app/Footer";
 import { Polyfill } from "@/app/Polyfill";
+import Analytics from "@/components/Analytics";
 
 // https://github.com/vercel/next.js/issues/45080
 const notoSansSC = Noto_Sans_SC({
@@ -85,6 +86,7 @@ export default function RootLayout({
             />
           </QueryProvider>
         </ThemeProvider>
+        <Analytics />
       </body>
     </html>
   );
