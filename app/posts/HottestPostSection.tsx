@@ -12,7 +12,7 @@ const PostItem = ({ post }: { post: Post }) => {
       className="group relative font-medium"
     >
       {post.title}
-      <ArrowSmallRightIcon className="absolute -left-8 top-0.5 h-5 w-5 text-accent-11 transition-transform duration-200 group-hover:translate-x-1.5" />
+      <ArrowSmallRightIcon className="absolute -left-8 top-0.5 hidden h-5 w-5 text-accent-11 transition-transform duration-200 group-hover:translate-x-1.5 sm:block" />
     </Link>
   );
 };
