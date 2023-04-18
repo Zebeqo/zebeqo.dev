@@ -1,7 +1,7 @@
 import "@/styles/globals.css";
+import "lxgw-wenkai-lite-webfont/style.css";
 import "core-js/features/array/at";
 import { Noto_Sans_SC } from "next/font/google";
-import localFont from "next/font/local";
 import QueryProvider, {
   ReactQueryDevtools,
 } from "@/components/Provider/QueryProvider";
@@ -22,16 +22,6 @@ const notoSansSC = Noto_Sans_SC({
   subsets: ["latin"],
   display: "swap",
   preload: false,
-});
-
-const lxgwWenkaiLite = localFont({
-  variable: "--font-lxgw-wenkai-lite",
-  src: [
-    { path: "../styles/fonts/LXGWWenKaiLite-Regular.ttf", weight: "400" },
-    { path: "../styles/fonts/LXGWWenKaiLite-Bold.ttf", weight: "700" },
-  ],
-  fallback: ["serif"],
-  display: "swap",
 });
 
 export const metadata: Metadata = {
@@ -76,7 +66,7 @@ export default function RootLayout({
     // https://github.com/pacocoursey/next-themes/issues/152#issuecomment-1364280564
     <html
       lang="zh"
-      className={`${notoSansSC.variable} ${lxgwWenkaiLite.variable} scroll-smooth`}
+      className={`${notoSansSC.variable} scroll-smooth`}
       suppressHydrationWarning
     >
       <body className="container mx-auto flex min-h-screen flex-col bg-neutral-2 px-4 text-neutral-12 selection:bg-primary-9 selection:text-white dark:bg-neutral-1 sm:px-12 lg:px-24 2xl:max-w-screen-xl">
