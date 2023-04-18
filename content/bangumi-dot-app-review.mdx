@@ -166,7 +166,7 @@ Next.js 13 推出了 App Router，支持布局、嵌套路由，并默认使用 
 
 用户收藏页面与之前页面的不同之处在于它的内容是用户特定并且需要即时数据的，所以需要考虑 Dynamic Rendering，甚至 [优先考虑 Dynamic Rendering](https://beta.nextjs.org/docs/data-fetching/fundamentals#fetching-data-on-the-server)。
 
-但是这个页面还是不适合 Dynamic Rendering。因为是第三方 APP，就算 Dynamic Rendering 也不能直接访问后端数据资源，还是使用远端的公有 API，无法发挥 Dynamic Rendering 的优势，凭空增加负担。
+但是这个页面还是不适合 Dynamic Rendering。因为是第三方 APP，就算 Dynamic Rendering 也不能直接访问后端数据资源，还是使用远端的公有 API，无法发挥 Dynamic Rendering 的优势，倒是增加了服务器负担。
 
 所以这种情况下传统的 Client Side Rendering(CSR) 即可。最后使用的是 Static Rendering with Client-Side `fetch`，因为页面其他静态部分还是可以 Static Rendering 的。
 
@@ -192,7 +192,7 @@ Next.js 13 推出了 App Router，支持布局、嵌套路由，并默认使用 
 
 ## 用户验证
 
-NextAuth.js 是一个 Next.js 的开源用户验证库，包含了对 OAuth 2.0 支持。它能够根据应用提供的配置选项生成一个 OAuth 2.0 的客户端，并将其挂载到 Next.js 的 API 端点上，自动配置 OAuth 2.0 的各个步骤，包括获取 access token、获取用户信息等。之后就可以在客户端和服务器端使用 NextAuth.js 提供的 hook 来获取 `session`。我在 `session` 中放了用户信息和 `access token`。
+NextAuth.js 是一个 Next.js 的开源用户验证库，包含了对 OAuth 2.0 支持。它能够根据应用提供的配置选项在 Next.js 中生成相关 API 端点，自动配置 OAuth 2.0 的各个步骤，包括获取 access token、获取用户信息等。之后就可以在客户端和服务器端使用 NextAuth.js 提供的 hook 来获取 `session`。我在 `session` 中放了用户信息和 `access token`。
 
 在客户端做验证时，用户只能在页面加载完，hydrate 之后再向 NextAuth.js 生成的 API 端点获取 `session` ，然后再放到 `SessionProvider` 中，这会产生额外的客户端-服务器瀑布流。而在服务器端做验证可以直接在 Dynamic Rendering 的时候就处理用户的 request，把他的 `session` 放到 `SessionProvider` 中。
 
