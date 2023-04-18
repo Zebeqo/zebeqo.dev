@@ -8,10 +8,8 @@ const nextConfig = {
   },
   images: {
     remotePatterns: [
-      {
-        protocol: "https",
-        hostname: "em-content.zobj.net",
-      },
+      { protocol: "https", hostname: "pbs.twimg.com" },
+      { protocol: "https", hostname: "abs.twimg.com" },
     ],
   },
   transpilePackages: ["jotai-devtools"],
