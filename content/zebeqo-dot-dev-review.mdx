@@ -113,7 +113,7 @@ tags:
 
 1. Static Rendering with Client-Side `fetch` 的 TTFB (Time to First Byte) 比 Dynamic Rendering 的短。但是页面的主要内容，通过数据库数据渲染的留言板，Dynamic Rendering 加载得反而更快。因为 Dynamic Rendering 可以更早地向数据库发起请求。
 
-2. Static Rendering 中预渲染的页面包括布局和留言板的 Skeleton UI 以及用户相关 UI 的 Skeleton，然后等待 Client-Side `fetch` 获取数据后渲染留言板和客户端。Dynamic Rendering 中，客户端第一次收到的页面是渲染的布局和用户相关 UI 和留言板 Skeleton UI，然后等待服务器发送渲染好的留言板 hydrate。Dynamic Rendering 中用户相关 UI 可以更早加载，因为服务器端第一次接受用户请求的时候就能获取用户验证信息去渲染用户 UI 了。
+2. Static Rendering 中预渲染的页面包括布局和留言板的 Skeleton UI 以及用户相关 UI 的 Skeleton，然后等待 Client-Side `fetch` 获取数据后渲染留言板和客户端。Dynamic Rendering 中，客户端第一次收到的页面是渲染的布局和用户相关 UI 和留言板 Skeleton UI，然后等待服务器发送留言板的 RSC output。Dynamic Rendering 中用户相关 UI 可以更早加载，因为服务器端第一次接受用户请求的时候就能获取用户验证信息去渲染用户 UI 了。
 
 3. DX 方面，Dynamic Rendering 既不需要在服务器创建 `GET` API，也不需要在客户端上编写数据获取逻辑，减少了大量代码。
 
@@ -132,4 +132,4 @@ RSC 中的 Mutation 目前仍未实现，所以仍需创建 `POST` API 用于客
 
 在 RSC Mutation 完成之前，目前对于 Dynamic Rendering 页面的 Mutation 的临时解决方法是: 在客户端对你的 `POST` API 发起请求，然后使用框架的路由 hook 刷新当前页面(可以保持客户端状态)。就这么简单，顶多加个 React 的 `useTransition()` hook 添加 Loading UI。所以能做的非常有限，当然对于我这个留言板页面来说，这种方式完全够用的。
 
-假如我的网站主页 `/home` 也是 Dynamic Rendering，然后需要展示留言板的最新留言，当用户在我的留言板页面 `/guestbook` 完成留言，对 `POST` API 发起请求，刷新完当前页面后，`/guestbook` 的留言板确实是最新的了，但是在使用 Next.js 框架的客户端导航组件 `<Link>` 的时候网站主页的最新留言是不会更新的。有一个比较 rough 的解决方案是把所有通往主页的客户端导航组件 `<Link>` 全部改成原始的 `<a>` ，像第一次加载一样加载主页。但是这种方法会丢失所有的客户端状态，重新 hydrate 整个页面。遇到这种像数据 span 多个页面，复杂一点情况的，我觉得现阶段要么补上 `GET` API 然后换成 Static Rendering with Client-Side `fetch`，要么等即将推出的 [Revalidating components API](https://vercel.com/blog/vercel-cache-api-nextjs-cache#revalidating-components-with-cache-tags)。
+假如我的网站主页 `/home` 也是 Dynamic Rendering，然后需要展示留言板的最新留言，当用户在我的留言板页面 `/guestbook` 完成留言，对 `POST` API 发起请求，刷新完当前页面后，`/guestbook` 的留言板确实是最新的了，但是在使用 Next.js 框架的客户端导航组件 `<Link>` 的时候网站主页的最新留言是不会更新的。有一个比较 rough 的解决方案是把所有通往主页的客户端导航组件 `<Link>` 全部改成原始的 `<a>` ，像第一次加载一样加载主页。但是这种方法会丢失所有的客户端状态，重新 hydrate 整个页面。遇到这种像数据 span 多个页面，稍微复杂一点情况的，我觉得现阶段要么补上 `GET` API 然后换成 Client-Side `fetch` + react query，要么等即将推出的 [Revalidating components API](https://vercel.com/blog/vercel-cache-api-nextjs-cache#revalidating-components-with-cache-tags)。RSC mutation 还有很长的路要走。
