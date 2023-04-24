@@ -37,7 +37,7 @@ Compound Pattern 通常使用 React 的 Context API 来实现，通过 Provider 
 
 结合这两个设计模式的一个简化例子是如下 `Select` 组件，它包含了一个触发按钮 `SelectTrigger` 和一个列表 `SelectList`。触发按钮可以控制列表的显示和隐藏，列表可以包含多个菜单项。该例子仅用于说明这两个设计模式的使用，没有实现完整的功能。
 
-- Select 文件是一个使用了复合模式的展示组件，它只通过 Context API 维护了 UI 的状态和方法，与业务无关。
+- Select 文件是一组使用了复合模式的展示组件，它只通过 Context API 维护了 UI 的状态和方法，与业务无关。
 
 ```jsx title="Select.tsx"
 const SelectContext = createContext();
