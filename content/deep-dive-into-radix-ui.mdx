@@ -1,7 +1,7 @@
 ---
 title: 深入理解 Radix UI
 date: 2023-3-17
-last_modified_at: 2023-3-29
+last_modified_at: 2023-4-24
 summary: 在 Radix UI 之上创作的组件库 shadcn/ui 是今年前端最火的组件库，发布两个多月以来，已经有 10k+ star。本文将以 shadcn/ui 背后的思想深入理解 Radix UI 。
 tags:
   - Tailwind CSS
@@ -10,9 +10,13 @@ tags:
 
 ## Radix UI 相关设计模式
 
-Radix UI 是一个 low level 的组件库，它提供了一系列无样式的基础组件，这些组件提供了灵活、强大的 API，让你可以根据自己的需求组合和扩展组件，可以帮助你快速构建高质量、可访问的设计系统和 Web 应用程序。
+Radix UI 提供了一系列无样式的基础组件，这些组件提供了灵活、强大的 API，让你可以根据自己的需求组合和扩展组件，可以帮助你快速构建高质量、可访问的设计系统和 Web 应用程序。
 
-想要理解 Radix UI，首先要了解前端组件设计中两个非常重要的设计模式。
+Radix UI 的组件本质上是一种 headless component。在软件开发中，通常一个组件会包含界面（UI）和逻辑（或功能）两部分，但是 headless component 只包含逻辑（或功能）部分，没有与之对应的界面。在前端开发中，有时需要将业务逻辑从界面组件中分离出来，以便在不同的界面上复用，这时可以使用 headless component。前端中的 headless component 是为其子组件提供行为的组件，并允许子组件决定要呈现的实际 UI，同时合并父组件提供的行为。
+
+使用 headless component 可以带来很多好处，包括提高代码的可复用性、简化代码的维护和测试、降低系统的耦合性等。由于 headless component 只关注业务逻辑而不涉及界面，因此它们通常更加轻量、灵活和易于测试。
+
+在前端组件设计中有两个非常重要的设计模式可以帮助我们实现 headless component。
 
 ### Container/Presentational Pattern
 
@@ -36,8 +40,6 @@ Compound Pattern 通常使用 React 的 Context API 来实现，通过 Provider 
 - Select 文件是一个使用了复合模式的展示组件，它只通过 Context API 维护了 UI 的状态和方法，与业务无关。
 
 ```jsx title="Select.tsx"
-import Icon from "./Icon";
-
 const SelectContext = createContext();
 
 function Select(props) {
@@ -57,7 +59,7 @@ function SelectTrigger() {
 
   return (
     <div className="select-btn" onClick={() => setOpen(!open)}>
-      <Icon />
+      {children}
     </div>
   );
 }
@@ -89,7 +91,7 @@ export function MovieSelect() {
 
   return (
     <Select>
-      <SelectTrigger />
+      <SelectTrigger>toggle list</SelectTrigger>
       <SelectList>
         {movieList.map((movie) => (
           <SelectListItem>{movie.title}</SelectListItem>
@@ -324,7 +326,7 @@ const SelectTrigger = React.forwardRef<
   <SelectPrimitive.Trigger
     ref={ref}
     className={cn(
-      "flex h-10 w-full items-center justify-between rounded-md border border-slate-300 bg-transparent py-2 px-3 text-sm placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-slate-400 focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 dark:border-slate-700 dark:text-slate-50 dark:focus:ring-slate-400 dark:focus:ring-offset-slate-900",
+      "flex h-10 w-full items-center justify-between rounded-md border border-slate-300 bg-transparent px-3 py-2 text-sm placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-slate-400 focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 dark:border-slate-700 dark:text-slate-50 dark:focus:ring-slate-400 dark:focus:ring-offset-slate-900",
       className
     )}
     {...props}
@@ -363,7 +365,7 @@ const SelectLabel = React.forwardRef<
   <SelectPrimitive.Label
     ref={ref}
     className={cn(
-      "py-1.5 pr-2 pl-8 text-sm font-semibold text-slate-900 dark:text-slate-300",
+      "py-1.5 pl-8 pr-2 text-sm font-semibold text-slate-900 dark:text-slate-300",
       className
     )}
     {...props}
@@ -378,7 +380,7 @@ const SelectItem = React.forwardRef<
   <SelectPrimitive.Item
     ref={ref}
     className={cn(
-      "relative flex cursor-default select-none items-center rounded-sm py-1.5 pr-2 pl-8 text-sm font-medium outline-none focus:bg-slate-100 data-[disabled]:pointer-events-none data-[disabled]:opacity-50 dark:focus:bg-slate-700",
+      "relative flex cursor-default select-none items-center rounded-sm py-1.5 pl-8 pr-2 text-sm font-medium outline-none focus:bg-slate-100 data-[disabled]:pointer-events-none data-[disabled]:opacity-50 dark:focus:bg-slate-700",
       className
     )}
     {...props}
