@@ -1,12 +1,23 @@
+/* eslint-disable jsx-a11y/alt-text */
 import { useMDXComponent } from "next-contentlayer/hooks";
-import Image from "@/components/Mdx/MdxImage";
+import MdxImage from "@/components/Mdx/MdxImage";
 import Link from "@/components/Mdx/MdxLink";
-import TweetClient from "@/components/Mdx/TweetClient";
+import Image from "next/image";
+import { Tweet, type TweetProps, type TweetComponents } from "react-tweet";
+
+const tweetComponents: TweetComponents = {
+  AvatarImg: (props) => <Image {...props} />,
+  MediaImg: (props) => <Image {...props} fill unoptimized />,
+};
 
 const components = {
-  Image,
+  Image: MdxImage,
   a: Link,
-  Tweet: TweetClient,
+  Tweet: (props: TweetProps) => (
+    <div className="not-prose flex flex-col items-center">
+      <Tweet {...props} components={tweetComponents} />
+    </div>
+  ),
 };
 
 export function Mdx({ code }: { code: string }) {
