@@ -16,6 +16,7 @@ import { Footer } from "@/app/Footer";
 import { Polyfill } from "@/app/Polyfill";
 import { Analytics } from "@vercel/analytics/react";
 
+// use in production
 // https://github.com/vercel/next.js/issues/45080
 const notoSansSC = Noto_Sans_SC({
   variable: "--font-noto-sans-sc",
@@ -24,6 +25,9 @@ const notoSansSC = Noto_Sans_SC({
   display: "swap",
   preload: false,
 });
+
+// use in development
+// const notoSansSC = { variable: "font-['Noto_Sans_SC']" };
 
 export const metadata: Metadata = {
   title: {
