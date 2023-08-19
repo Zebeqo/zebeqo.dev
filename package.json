@@ -47,7 +47,7 @@
     "tailwindcss-radix": "2.8.0",
     "unist-util-visit": "4.1.2",
     "use-debounce": "9.0.4",
-    "zod": "3.21.4"
+    "zod": "3.22.2"
   },
   "devDependencies": {
     "@radix-ui/colors": "0.1.8",
