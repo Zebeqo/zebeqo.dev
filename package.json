@@ -26,7 +26,7 @@
     "contentlayer": "0.3.2",
     "core-js": "3.30.1",
     "dayjs": "1.11.7",
-    "framer-motion": "10.12.7",
+    "framer-motion": "10.18.0",
     "jotai": "2.0.4",
     "jotai-devtools": "0.5.2",
     "lxgw-wenkai-lite-webfont": "1.7.0",
