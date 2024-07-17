@@ -60,7 +60,7 @@
     "@storybook/jest": "0.1.0",
     "@storybook/nextjs": "7.0.8",
     "@storybook/react": "7.0.8",
-    "@storybook/test-runner": "0.10.0",
+    "@storybook/test-runner": "0.19.1",
     "@storybook/testing-library": "0.1.0",
     "@swc-jotai/debug-label": "0.0.10",
     "@swc-jotai/react-refresh": "0.0.8",
