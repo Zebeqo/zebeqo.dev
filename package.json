@@ -28,7 +28,7 @@
     "dayjs": "1.11.7",
     "framer-motion": "10.12.7",
     "jotai": "2.0.4",
-    "jotai-devtools": "0.5.2",
+    "jotai-devtools": "0.10.1",
     "lxgw-wenkai-lite-webfont": "1.7.0",
     "mdast-util-toc": "6.1.1",
     "next": "13.3.4",
