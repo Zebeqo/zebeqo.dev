@@ -24,7 +24,7 @@
     "@vercel/analytics": "1.0.1",
     "clsx": "1.2.1",
     "contentlayer": "0.3.2",
-    "core-js": "3.30.1",
+    "core-js": "3.38.1",
     "dayjs": "1.11.7",
     "framer-motion": "10.12.7",
     "jotai": "2.0.4",
