@@ -82,7 +82,7 @@
     "postcss-loader": "7.3.0",
     "prettier": "2.8.8",
     "prettier-plugin-prisma": "4.13.0",
-    "prettier-plugin-tailwindcss": "0.2.8",
+    "prettier-plugin-tailwindcss": "0.6.8",
     "prisma": "4.13.0",
     "storybook": "7.0.8",
     "storybook-dark-mode": "3.0.0",
